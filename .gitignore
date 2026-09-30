@@ -1,0 +1,12 @@
+# large or third-party data: download with the scripts, never commit
+data/raw/
+data/mock/
+data/reddit/raw/
+models/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+# keep: data/processed/*/data_report.json, data/reddit/clean/*report.json,
+#       data/reddit/processed/ (the constructed dataset), results/, annotation/
+data/processed/*/*.txt
+!data/processed/*/data_report.json

@@ -1,2 +1,131 @@
-# demog-leakage
-Replication and extension of Elazar &amp; Goldberg (2018), adversarial removal of demographic attributes.
+# Adversarial removal of demographic attributes: replication and extension
+
+COMP8240 project, Aayushi Dharmeshbhai Patel (49136186), Macquarie University.
+
+Reproduces **Elazar & Goldberg (2018), "Adversarial Removal of Demographic
+Attributes from Text Data" (EMNLP)** and extends it to new data. The paper's
+claim: adversarial training drives the *online* adversary to chance, yet a fresh
+*post-hoc attacker* trained on the frozen representation still recovers the
+demographic attribute well above chance.
+
+## What is here
+
+| Path | What it does |
+|---|---|
+| `src/prepare_twitteraae.py` | builds the paper's balanced sentiment/race data (166k train / 10k test) from TwitterAAE, streaming, in 8 GB RAM |
+| `src/models.py`, `src/optim.py` | PyTorch port of the original DyNet model: 300-d embeddings, 300-d LSTM, 300-d tanh heads, gradient reversal, DyNet-style momentum SGD |
+| `src/experiments.py` | trains encoders, runs post-hoc attackers, writes a results table next to the paper's numbers |
+| `src/collect_reddit.py` | collects comments from US and Nigerian subreddits through the Arctic Shift archive API |
+| `src/preprocess_reddit.py` | cleaning, bot and cross-group author removal, author caps, dedup, Pidgin markers, topic masking |
+| `src/label_reddit.py` | distant-supervision sentiment (emoji, optionally VADER), length-matched balanced quadrants, author-disjoint split |
+| `src/annotation.py` | blind human-annotation sample (200 comments) and agreement scoring |
+| `src/prepare_pan17.py` | existing dataset: PAN 2017 English, variety (GB vs US) or gender as the protected attribute |
+| `notebooks/replicate_on_colab.ipynb` | the replication on a free Colab GPU |
+| `scripts/smoke_test.sh` | runs everything on mock data in about 5 minutes |
+
+## Environment
+
+* **GitHub Codespaces** (the unit's VM): open the repo, *Code → Codespaces →
+  Create*. The dev container installs Python 3.11, CPU PyTorch and the
+  requirements. 2 cores / 8 GB is enough for everything; the replication
+  training takes about 3-4 hours on CPU.
+* **Google Colab** (the unit's suggested notebook environment): use
+  `notebooks/replicate_on_colab.ipynb` with a T4 GPU for the training step.
+
+First, check the environment (about 5 minutes):
+
+```bash
+bash scripts/smoke_test.sh          # must end with SMOKE TEST PASSED
+```
+
+## 1. Replication on the original data (TwitterAAE, race branch)
+
+```bash
+bash scripts/get_twitteraae.sh                                            # download + unzip
+python src/prepare_twitteraae.py data/raw/TwitterAAE-full-v1 data/processed/sent_race
+python src/experiments.py run-all --data data/processed/sent_race --epochs 20 --tag twitteraae
+cat results/twitteraae/results.md
+```
+
+`run-all` runs the paper's four balanced experiments:
+
+| | Experiment | Paper |
+|---|---|---|
+| E1 | encoder trained on sentiment only: sentiment accuracy | 67.4 |
+| E2 | encoder trained on race only: race accuracy | 83.9 |
+| E3 | post-hoc attacker on the E1 encoder: leakage, no defence | 64.5 |
+| E4 | adversarial training, lambda = 1: sentiment / leakage / delta | 64.7 / 56.0 / 5.0 |
+
+Investigation option: `--mode faithful` in `prepare_twitteraae.py` reproduces the
+original preprocessing exactly as written, including two quirks found on
+reading the code (see *Deviations*). Comparing its `data_report.json` with the
+clean run's shows how many tweets are affected.
+
+## 2. Constructed dataset: US vs Nigerian English on Reddit
+
+```bash
+python src/collect_reddit.py                  # ~1-2 h at 1 request/s; resumable
+python src/preprocess_reddit.py               # -> data/reddit/clean/
+python src/label_reddit.py                    # -> data/reddit/processed/{tokens,masked}/
+python src/annotation.py sample --n 50        # -> annotation/sample_for_annotation.csv (blind)
+# annotate the 200 comments (human_sentiment: pos/neg/neutral, human_variety: NG/US/unsure),
+# save as annotation/sample_annotated.csv, then:
+python src/annotation.py score annotation/sample_annotated.csv
+python src/experiments.py run-all --data data/reddit/processed/tokens --epochs 20 \
+    --tag reddit_tokens --attribute "variety (NG vs US)" --no-paper
+python src/experiments.py run-all --data data/reddit/processed/masked --epochs 20 \
+    --tag reddit_masked --attribute "variety (NG vs US)" --no-paper
+```
+
+Subreddits and the time window are in `config/reddit_groups.json`. The
+`masked` variant replaces place names, politicians, currencies and similar
+topic giveaways with `_TOPIC_`, to test whether an attacker is reading dialect
+or merely topic. `label_reddit.py --labels emoji` restricts to emoji labels
+(closest to the paper); the default adds strong VADER labels because emojis
+are rarer on Reddit.
+
+## 3. Existing dataset: PAN 2017 author profiling
+
+```bash
+bash scripts/get_pan17.sh
+python src/prepare_pan17.py data/raw/pan17/<path>/en data/processed/pan17_gb_us
+python src/experiments.py run-all --data data/processed/pan17_gb_us --epochs 20 \
+    --tag pan17_gb_us --attribute "variety (GB vs US)" --no-paper
+```
+
+## Deviations from the original, and why
+
+* **Framework.** The released code is Python 2 with a custom DyNet fork; it is
+  reimplemented in PyTorch with the same sizes and optimiser settings (momentum
+  SGD, lr 0.01, summed losses over batches of 32, gradient clipping at 5,
+  sparse embedding updates, dropout 0.2).
+* **Epochs.** 20 instead of 100, for the compute available; every epoch is
+  logged so convergence can be checked.
+* **Model selection.** The original keeps the epoch with the best *test*
+  accuracy, for both the encoder and the attacker. We report that ("paper
+  protocol") and, alongside, the test score at the epoch chosen on a separate
+  validation set ("held-out selection").
+* **Preprocessing quirks in the original** (kept in `--mode faithful`, fixed
+  in the default `clean` mode): tweets are collected emoji by emoji, so one with
+  two different happy emojis is counted twice; the check meant to drop tweets
+  with both happy and sad emojis compares tokens with regex strings and never
+  fires, so such tweets enter both classes; and quadrants are ordered by emoji
+  rather than shuffled, so train and test come from different emojis.
+* **Gender/age branch not reproduced.** PAN16 ships tweet ids only and the
+  Twitter API that rehydrated them is no longer free.
+* **Reddit access.** The proposal planned the official Reddit API; self-service
+  keys were withdrawn in late 2025, so comments come from the Arctic Shift
+  public archive instead.
+
+## Data and ethics
+
+Reddit authors are stored only as salted hashes; usernames are never written.
+Raw downloads (`data/raw/`, `data/reddit/raw/`) are not committed. The dialect
+labels in every dataset are coarse proxies (inferred from geography or from the
+subreddit), not self-reported identity, and results should be read that way.
+
+## References
+
+Elazar & Goldberg (2018), EMNLP. Blodgett, Green & O'Connor (2016), EMNLP.
+Ganin & Lempitsky (2015), ICML. Rangel et al. (2017), PAN at CLEF.
+Hutto & Gilbert (2014), VADER, ICWSM.
