@@ -36,8 +36,8 @@ def regex_or(*items):
     return '(?:' + '|'.join(items) + ')'
 
 
-Contractions = re.compile(u"(?i)(\w+)(n['’′]t|['’′]ve|['’′]ll|['’′]d|['’′]re|['’′]s|['’′]m)$", re.UNICODE)
-Whitespace = re.compile(u"[\s\u0020\u00a0\u1680\u180e\u202f\u205f\u3000\u2000-\u200a]+", re.UNICODE)
+Contractions = re.compile(r"(?i)(\w+)(n['’′]t|['’′]ve|['’′]ll|['’′]d|['’′]re|['’′]s|['’′]m)$", re.UNICODE)
+Whitespace = re.compile(r"[\s\u0020\u00a0\u1680\u180e\u202f\u205f\u3000\u2000-\u200a]+", re.UNICODE)
 
 punctChars = r"['\"“”‘’.?!…,:;]"
 # punctSeq   = punctChars+"+"	#'anthem'. => ' anthem '.
@@ -161,7 +161,7 @@ AtMention = "[@＠][a-zA-Z0-9_]+"
 # but seems ok in sample of 5800: 7 changes all email fixes
 # http://www.regular-expressions.info/email.html
 Bound = r"(?:\W|^|$)"
-Email = regex_or("(?<=(?:\W))", "(?<=(?:^))") + r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}(?=" + Bound + ")"
+Email = regex_or(r"(?<=(?:\W))", "(?<=(?:^))") + r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}(?=" + Bound + ")"
 
 # We will be tokenizing using these regexps as delimiters
 # Additionally, these things are "protected", meaning they shouldn't be further split themselves.
