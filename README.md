@@ -31,6 +31,10 @@ demographic attribute well above chance.
   training takes about 3-4 hours on CPU.
 * **Google Colab** (the unit's suggested notebook environment): use
   `notebooks/replicate_on_colab.ipynb` with a T4 GPU for the training step.
+  Prepare the data in Codespaces, then
+  `cd data/processed && zip -r ../../processed_data.zip sent_race sent_race_faithful`,
+  download `processed_data.zip` and put it in `MyDrive/comp8240/` on Google Drive.
+  (The prepared tweets are not committed to the public repository.)
 
 First, check the environment (about 5 minutes):
 
@@ -80,6 +84,11 @@ python src/experiments.py run-all --data data/reddit/processed/tokens --epochs 2
 python src/experiments.py run-all --data data/reddit/processed/masked --epochs 20 \
     --tag reddit_masked --attribute "variety (NG vs US)" --no-paper
 ```
+
+The archive answers HTTP 422 when a query is too expensive (large subreddits
+over a long time range); the collector then narrows its time window and
+continues. Any window it still has to skip is listed in
+`data/reddit/raw/skipped_windows.jsonl`, so gaps in the data can be reported.
 
 Subreddits and the time window are in `config/reddit_groups.json`. The
 `masked` variant replaces place names, politicians, currencies and similar

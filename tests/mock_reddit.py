@@ -50,13 +50,15 @@ def fake_comment(rng, group, sub, t, i):
             "author_flair_text": None}
 
 
-def make_fake_api(group, sub, n_total, seed):
+def make_fake_api(group, sub, n_total, seed, quiet_days_at=None):
     rng = random.Random(seed)
     t0 = 1704067200
     comments = []
     t = t0
     for i in range(n_total):
         t += rng.choice([0, 1, 5, 30, 120])  # includes same-second comments
+        if i == quiet_days_at:
+            t += 10 * 86400  # ten days with no comments: empty windows
         comments.append(fake_comment(rng, group, sub, t, i))
 
     def fetch(subreddit, after, before, limit=100):
@@ -66,7 +68,28 @@ def make_fake_api(group, sub, n_total, seed):
     return fetch
 
 
+def refuse_wide(fetch, max_span):
+    """Like the real archive's HTTP 422: refuse queries over a long time range."""
+    def f(subreddit, after, before, limit=100):
+        if before - after > max_span:
+            raise collect_reddit.QueryFailed("simulated HTTP 422 Query timed out")
+        return fetch(subreddit, after, before, limit)
+    f.comments = fetch.comments
+    return f
+
+
+def refuse_stretch(fetch, bad_from, bad_to):
+    """Refuse every query touching one stretch of time, however narrow."""
+    def f(subreddit, after, before, limit=100):
+        if after < bad_to and before > bad_from:
+            raise collect_reddit.QueryFailed("simulated persistent failure")
+        return fetch(subreddit, after, before, limit)
+    f.comments = fetch.comments
+    return f
+
+
 def main():
+    import json
     out = "data/mock/reddit_raw"
     os.makedirs(out, exist_ok=True)
     for f in os.listdir(out):
@@ -74,19 +97,38 @@ def main():
     subs = {"ng": ["Nigeria", "lagos"], "us": ["AskAnAmerican", "chicago"]}
     for g, ss in subs.items():
         for k, s in enumerate(ss):
-            fetch = make_fake_api(g, s, 6000, seed=zlib.crc32((g + s).encode()) % 1000)
+            seed = zlib.crc32((g + s).encode()) % 1000
+            fetch = make_fake_api(g, s, 6000, seed=seed, quiet_days_at=2500 if s == "chicago" else None)
+            bad = None
+            if s == "chicago":      # wide queries refused, plus a quiet stretch
+                fetch = refuse_wide(fetch, max_span=2 * 86400)
+            if s == "lagos":        # one stretch that always fails is skipped
+                t_bad = fetch.comments[3000]["created_utc"]
+                bad = (t_bad, t_bad + 600)
+                fetch = refuse_stretch(fetch, *bad)
+            gaps = []
             n = collect_reddit.collect_sub(g, s, 1704067200, 1751328000, cap=5000, outdir=out,
-                                           pause=0, fetch=fetch)
+                                           pause=0, fetch=fetch, gaps=gaps)
             assert n == 5000, n
             # resume: a second call must not duplicate anything
             n2 = collect_reddit.collect_sub(g, s, 1704067200, 1751328000, cap=5000, outdir=out,
                                             pause=0, fetch=fetch)
             assert n2 == 5000, n2
-            import json
             got = [json.loads(l)["id"] for l in open(os.path.join(out, f"{g}_{s}.jsonl"))]
-            want = [c["id"] for c in fetch.comments[:5000]]
-            assert got == want, "comments lost or reordered at page boundaries"
-    print("collector OK (pagination, caps and resume)")
+            assert len(got) == len(set(got)) == 5000
+            if bad is None:
+                want = [c["id"] for c in fetch.comments[:5000]]
+                assert got == want, "comments lost or reordered at page boundaries"
+                assert not gaps
+            else:
+                # only comments within an hour of the failing stretch may be missing
+                got_set = set(got)
+                t_last = max(c["created_utc"] for c in fetch.comments if c["id"] in got_set)
+                lost = [c for c in fetch.comments if c["id"] not in got_set and c["created_utc"] < t_last]
+                assert gaps and lost, "the failing stretch was not skipped"
+                assert all(bad[0] - 3600 <= c["created_utc"] <= bad[1] + 3600 for c in lost), lost[:3]
+                assert got == [c["id"] for c in fetch.comments if c["id"] in got_set]
+    print("collector OK (pagination, caps, resume, refused queries, skipped windows)")
 
 
 if __name__ == "__main__":

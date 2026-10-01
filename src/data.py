@@ -50,9 +50,12 @@ def make_splits(folder, train=41500, test=2500, val=2500, seed=16):
     if os.path.exists(os.path.join(folder, "split.json")):
         fixed = json.load(open(os.path.join(folder, "split.json")))
     n_min = min(len(v) for v in data.values())
-    if not fixed and n_min < train + test:  # small data: 90/10 per quadrant
-        test = max(1, int(round(n_min * 0.1)))
-        train = n_min - test
+    if not fixed and n_min < train + test + val:
+        # Not enough for the paper's sizes in every quadrant: use the same
+        # sizes for all four so the data stays balanced (test and validation
+        # each min(2,500, 10%), training the rest, at most the paper's 41,500).
+        test = val = min(test, max(1, round(0.1 * n_min)))
+        train = min(train, n_min - test - val)
     splits = {"train": [], "test": [], "val": []}
     for name, y, z in QUADS:
         rows = data[name]
