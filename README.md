@@ -41,8 +41,8 @@ bash scripts/smoke_test.sh          # must end with SMOKE TEST PASSED
 ## 1. Replication on the original data (TwitterAAE, race branch)
 
 ```bash
-bash scripts/get_twitteraae.sh                                            # download + unzip
-python src/prepare_twitteraae.py data/raw/TwitterAAE-full-v1 data/processed/sent_race
+bash scripts/get_twitteraae.sh                   # ~5.5 GB zip, read directly (no unzipping)
+python src/prepare_twitteraae.py data/raw/TwitterAAE-full-v1.zip data/processed/sent_race
 python src/experiments.py run-all --data data/processed/sent_race --epochs 20 --tag twitteraae
 cat results/twitteraae/results.md
 ```
