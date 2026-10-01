@@ -1,9 +1,26 @@
 {
-  "_comment": "Subreddits used as a proxy for English variety. ng = Nigerian English (z = 1), us = United States English (z = 0). Chosen so both sides are general local-life discussion rather than one topic. Edit freely; the collector reports how many comments each one yields.",
-  "window": {"after": "2024-01-01", "before": "2025-07-01"},
+  "_comment": "Subreddits used as a proxy for English variety. ng = Nigerian English (z = 1), us = United States English (z = 0). Both sides are general local-life discussion rather than one topic. Nigerian subreddits are smaller, so they get a higher cap per subreddit to balance the groups.",
+  "window": {
+    "after": "2024-01-01",
+    "before": "2025-07-01"
+  },
   "max_comments_per_subreddit": 60000,
   "groups": {
-    "ng": ["Nigeria", "lagos", "Abuja"],
-    "us": ["AskAnAmerican", "chicago", "houston", "Atlanta", "philadelphia"]
+    "ng": [
+      "Nigeria",
+      "lagos",
+      "Abuja"
+    ],
+    "us": [
+      "AskAnAmerican",
+      "chicago",
+      "houston",
+      "Atlanta",
+      "philadelphia"
+    ]
+  },
+  "max_comments_per_subreddit_by_group": {
+    "ng": 250000,
+    "us": 60000
   }
 }

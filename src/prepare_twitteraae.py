@@ -1,42 +1,55 @@
 """Build the balanced sentiment/race dataset from the TwitterAAE corpus.
 
 Python 3 re-implementation of make_data.py + data_utils.py from Elazar & Goldberg
-(2018). It streams the corpus instead of loading it into pandas, so it runs in
-8 GB of RAM (GitHub Codespaces / Colab).
+(2018). It streams the corpus in a single pass (straight out of the downloaded
+zip if given the .zip), so it runs in a few GB of RAM and never unpacks the
+12 GB file.
+
+File format (TwitterAAE-full-v1/twitteraae_all, tab separated):
+  tweet_id, "timestamp", "user_id", [lon, lat], "census_blockgroup",
+  "text" (a JSON string: emojis as \\uXXXX surrogate pairs, \\n for newlines),
+  P(AA), P(Hispanic), P(Asian/other), P(White)
 
 Recipe (as in the original code):
   * dialect group: AA-aligned if P(AA) > 0.8, White-aligned if P(White) > 0.8
   * sentiment: tweet contains one of the paper's happy / sad emojis
   * emojis are then removed, text tokenised with twokenize, @mentions mapped
   * tweets with < 3 tokens, or only mentions, are dropped
-  * exact duplicate texts are removed entirely (pandas keep=False)
-  * 4 quadrants (pos/neg sentiment x AA/White); per quadrant the first 41,500
-    go to training and the next 2,500 to test -> 166k train / 10k test.
-    We also write 2,500 more per quadrant as a separate validation set, so
-    models can be selected without looking at the test set (the original code
-    selects the best epoch on the test set).
+  * texts that occur more than once in the corpus are removed entirely
+    (pandas drop_duplicates(keep=False) in the original)
+  * 4 quadrants (pos/neg x AA/White); per quadrant the first 41,500 go to
+    training and the next 2,500 to test -> 166k train / 10k test. 2,500 more
+    per quadrant form a separate validation set, so models can be selected
+    without looking at the test set (the original selects on the test set).
 
-Two selection modes:
-  clean (default): a tweet with both happy and sad emojis is discarded, every
-      tweet is used at most once, quadrants are shuffled with a fixed seed.
-  faithful: mimics the original code exactly as written, including two quirks
-      found on inspection: tweets are collected emoji-by-emoji (so a tweet with
-      two different happy emojis is added twice, and one with a happy and a sad
-      emoji lands in both classes, because the conflict check compares tokens
-      against regex strings and never fires), and quadrants are ordered by
-      emoji rather than shuffled, so train and test come from different emojis.
+Each quadrant is drawn as a uniform random sample (reservoir sampling), so
+only a few hundred thousand tweets are ever held in memory.
 
-Input: a TwitterAAE file (tab separated: tweet_id, timestamp, user_id,
-lat/lon, census_blockgroup, text, P(AA), P(Hispanic), P(Other), P(White)).
-Either twitteraae_all, or the twitteraae_all_aa / twitteraae_all_white subsets.
+Modes
+  clean (default): tweets with both happy and sad emojis are dropped, each
+      tweet is used once, quadrants are in random order.
+  faithful: reproduces how the original code behaves as written:
+      - tweets are collected emoji by emoji, so a tweet with two different
+        happy emojis is added twice;
+      - the check meant to drop tweets with both happy and sad emojis compares
+        tokens with regex strings and never fires, so they enter both classes;
+      - the pattern for the sob emoji has a missing backslash
+        ('\\\\\\ud83d\\ude2d'), so under Python 2 it never matches and sob-only
+        tweets are never collected as sad;
+      - quadrants are ordered by emoji, not shuffled, so the training and test
+        portions can come from different emojis.
+      The original's emoji order came from Python 2 set iteration and cannot be
+      reproduced exactly; the list order of textutils.py is used instead.
+  Both modes report how many tweets each quirk affects (data_report.json).
 
 Usage:
   python src/prepare_twitteraae.py data/raw/TwitterAAE-full-v1.zip data/processed/sent_race
-  python src/prepare_twitteraae.py <in> <out> --mode faithful
+  python src/prepare_twitteraae.py data/raw/TwitterAAE-full-v1.zip data/processed/sent_race_faithful --mode faithful
+  python src/prepare_twitteraae.py <zip> <out> --max-lines 2000000      # quick trial
 """
 import argparse
+import array
 import contextlib
-import hashlib
 import io
 import json
 import os
@@ -46,6 +59,8 @@ import time
 import zipfile
 from collections import Counter, defaultdict
 
+import numpy as np
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from textutils import HAPPY, SAD, MENTION, decode_escapes, emoji_hits, normalize_text  # noqa: E402
 
@@ -54,10 +69,15 @@ MIN_SENTENCE_LEN = 3
 SEED = 16
 TRAIN_PER_QUAD = 41500
 TEST_PER_QUAD = 2500
-VAL_PER_QUAD = 2500  # extra held-out set (not in the paper) for honest model selection
+VAL_PER_QUAD = 2500
+NEED = TRAIN_PER_QUAD + TEST_PER_QUAD + VAL_PER_QUAD
+RESERVOIR = 100000        # per quadrant (the original also kept 100,000 per quadrant)
+FAITHFUL_RESERVOIR = 60000  # per (quadrant, emoji) bucket
 QUADS = ["pos_aa", "pos_wh", "neg_aa", "neg_wh"]
+SOB = SAD.index("\U0001F62D")
 
 
+# ---------------------------------------------------------------- input files
 def _pick(names):
     """Choose which TwitterAAE files to read from a list of (base)names."""
     base = {os.path.basename(n): n for n in names if not n.endswith("/")}
@@ -65,12 +85,12 @@ def _pick(names):
         return [base["twitteraae_all_aa"], base["twitteraae_all_white"]]
     if "twitteraae_all" in base:
         return [base["twitteraae_all"]]
-    return sorted(v for k, v in base.items() if k.startswith("twitteraae") and not k.endswith(".zip"))
+    return sorted(v for k, v in base.items()
+                  if k.startswith("twitteraae") and not k.endswith(".zip") and "limited" not in k)
 
 
 def find_inputs(path):
-    """Files to read. `path` may be a file, a folder, or the downloaded .zip itself
-    (read directly, without unzipping, which saves ~15 GB of disk)."""
+    """Files to read: a file, a folder, or the downloaded .zip itself."""
     if path.endswith(".zip") and os.path.isfile(path):
         with zipfile.ZipFile(path) as zf:
             chosen = _pick(zf.namelist())
@@ -101,77 +121,33 @@ def describe(src):
     return f"{src[0]}::{src[1]}" if isinstance(src, tuple) else src
 
 
-def parse_line(line):
-    f = line.rstrip("\n").split("\t")
-    if len(f) < 10:
-        return None
+# ---------------------------------------------------------------- text field
+def maybe_emoji(field):
+    """Cheap test on the raw (escaped) text: could it contain a sentiment emoji?"""
+    if "\\ud83" in field or "\\u263" in field:  # escaped emoji, relaxed, frowning
+        return True
+    if not field.isascii():                      # emojis stored as raw characters
+        return True
+    if ("(" in field or ")" in field) and (":" in field or "=" in field):
+        return True
+    return ":D" in field
+
+
+def decode_text(field, stats):
+    """The text column is a JSON string literal; decode it to real characters."""
+    if len(field) >= 2 and field[0] == '"' and field[-1] == '"':
+        try:
+            text = json.loads(field)
+        except ValueError:
+            stats["text_not_valid_json"] += 1
+            text = decode_escapes(field[1:-1])
+    else:
+        text = decode_escapes(field)
     try:
-        aa = float(f[-4])
-        wh = float(f[-1])
-    except ValueError:
-        return None
-    text = "\t".join(f[5:-4])
-    return text, aa, wh
-
-
-def text_key(text):
-    return hashlib.md5(text.encode("utf-8", "ignore")).digest()
-
-
-def scan(files, max_lines=None):
-    """Pass 1: keep high-confidence tweets that contain a sentiment emoji."""
-    stats = Counter()
-    cands = []  # dicts: key (md5 of raw text), text, group, happy, sad
-    t0 = time.time()
-    for fn in files:
-        with open_source(fn) as fh:
-            for line in fh:
-                stats["lines_read"] += 1
-                if max_lines and stats["lines_read"] > max_lines:
-                    break
-                row = parse_line(line)
-                if row is None:
-                    stats["unparseable"] += 1
-                    continue
-                raw, aa, wh = row
-                if aa > CONF_LEVEL:
-                    group = "aa"
-                elif wh > CONF_LEVEL:
-                    group = "wh"
-                else:
-                    continue
-                stats[f"highconf_{group}"] += 1
-                text = decode_escapes(raw)
-                h = emoji_hits(text, HAPPY)
-                s = emoji_hits(text, SAD)
-                if not h and not s:
-                    continue
-                cands.append({"key": text_key(raw), "text": text, "group": group, "happy": h, "sad": s})
-                if stats["lines_read"] % 5_000_000 == 0:
-                    print(f"  {stats['lines_read']:,} lines, {len(cands):,} candidates, "
-                          f"{time.time() - t0:.0f}s", flush=True)
-    stats["emoji_candidates"] = len(cands)
-    return cands, stats
-
-
-def duplicate_texts(files, cands, max_lines=None):
-    """Pass 2: texts occurring more than once in the input (pandas keep=False)."""
-    wanted = {c["key"] for c in cands}
-    counts = Counter()
-    n = 0
-    for fn in files:
-        with open_source(fn) as fh:
-            for line in fh:
-                n += 1
-                if max_lines and n > max_lines:
-                    break
-                row = parse_line(line)
-                if row is None:
-                    continue
-                k = text_key(row[0])
-                if k in wanted:
-                    counts[k] += 1
-    return {k for k, v in counts.items() if v > 1}
+        text.encode("utf-8")
+    except UnicodeEncodeError:  # lone surrogates in truncated tweets
+        text = text.encode("utf-8", "replace").decode("utf-8")
+    return text
 
 
 def valid_tokens(toks):
@@ -182,63 +158,159 @@ def valid_tokens(toks):
     return True
 
 
-def select_clean(cands, stats):
-    quads = defaultdict(list)
-    for c in cands:
-        if c["happy"] and c["sad"]:
-            stats["dropped_conflicting_emojis"] += 1
-            continue
-        toks = normalize_text(c["text"])
-        if not valid_tokens(toks):
-            stats["dropped_short"] += 1
-            continue
-        sent = "pos" if c["happy"] else "neg"
-        quads[f"{sent}_{c['group']}"].append(toks)
-    rng = random.Random(SEED)
+# ---------------------------------------------------------------- the pass
+def reservoir_add(bucket, seen, key, item, cap, rng):
+    seen[key] += 1
+    if len(bucket) < cap:
+        bucket.append(item)
+    else:
+        j = rng.randrange(seen[key])
+        if j < cap:
+            bucket[j] = item
+
+
+def scan(files, mode, max_lines, rng):
+    stats = Counter()
+    seen = Counter()   # items offered to each reservoir bucket
+    pop = Counter()    # population count per quadrant (each tweet once)
+    res = defaultdict(list)
+    hashes = array.array("q")  # hash of every emoji tweet, any confidence (for dedup)
+    emoji_counts = {g: Counter() for g in ("aa", "wh")}
+    t0 = time.time()
+    n = 0
+    for src in files:
+        with open_source(src) as fh:
+            for line in fh:
+                n += 1
+                if max_lines and n > max_lines:
+                    n -= 1
+                    break
+                if n % 5_000_000 == 0:
+                    rate = n / max(1e-9, time.time() - t0)
+                    print(f"  {n / 1e6:.0f}M lines | emoji tweets {stats['emoji_tweets_any_confidence']:,} | "
+                          ", ".join(f"{q} {pop.get(q, 0):,}" for q in QUADS) +
+                          f" | {time.time() - t0:.0f}s ({rate / 1000:.0f}k lines/s)", flush=True)
+                f = line.rstrip("\r\n").split("\t")
+                if len(f) < 10:
+                    stats["unparseable_lines"] += 1
+                    continue
+                field = f[5] if len(f) == 10 else "\t".join(f[5:-4])
+                if not maybe_emoji(field):
+                    continue
+                text = decode_text(field, stats)
+                h = emoji_hits(text, HAPPY)
+                s = emoji_hits(text, SAD)
+                if not h and not s:
+                    continue
+                key = hash(field)
+                hashes.append(key)
+                stats["emoji_tweets_any_confidence"] += 1
+                try:
+                    aa, wh = float(f[-4]), float(f[-1])
+                except ValueError:
+                    stats["unparseable_lines"] += 1
+                    continue
+                if aa > CONF_LEVEL:
+                    g = "aa"
+                elif wh > CONF_LEVEL:
+                    g = "wh"
+                else:
+                    continue
+                # population statistics, including the original code's quirks
+                stats[f"highconf_emoji_{g}"] += 1
+                for i in h:
+                    emoji_counts[g][HAPPY[i]] += 1
+                for i in s:
+                    emoji_counts[g][SAD[i]] += 1
+                if h and s:
+                    stats[f"quirk_both_happy_and_sad_{g}"] += 1
+                if len(h) > 1 or len(s) > 1:
+                    stats[f"quirk_two_or_more_emojis_same_class_{g}"] += 1
+                if s and not h and s == [SOB]:
+                    stats[f"quirk_sad_only_via_sob_{g}"] += 1
+                if s and not h:
+                    stats[f"sad_only_{g}"] += 1
+                if h and not s:
+                    stats[f"happy_only_{g}"] += 1
+                item = (key, text)
+                if mode == "clean":
+                    if h and s:
+                        continue
+                    q = ("pos_" if h else "neg_") + g
+                    pop[q] += 1
+                    reservoir_add(res[q], seen, q, item, RESERVOIR, rng)
+                else:
+                    if h:
+                        pop["pos_" + g] += 1
+                    if [i for i in s if i != SOB]:
+                        pop["neg_" + g] += 1
+                    for i in h:
+                        b = ("pos_" + g, i)
+                        reservoir_add(res[b], seen, b, item, FAITHFUL_RESERVOIR, rng)
+                    for i in s:
+                        if i != SOB:
+                            b = ("neg_" + g, i)
+                            reservoir_add(res[b], seen, b, item, FAITHFUL_RESERVOIR, rng)
+    stats["lines_read"] = n
+    stats["seconds_scanning"] = round(time.time() - t0)
+    return res, pop, hashes, emoji_counts, stats
+
+
+def duplicated_keys(hashes):
+    if not hashes:
+        return set()
+    arr = np.array(hashes, dtype=np.int64)
+    arr.sort()
+    same = arr[1:] == arr[:-1]
+    return set(arr[1:][same].tolist())
+
+
+def select(res, mode, dups, rng, stats):
+    quads, origin = {}, {}
     for q in QUADS:
-        rng.shuffle(quads[q])
-    return quads
-
-
-def select_faithful(cands, stats):
-    """Reproduce get_attr_sentiments() as written in the original code."""
-    rng = random.Random(SEED)
-    cands = cands[:]
-    rng.shuffle(cands)  # original: sklearn.utils.shuffle(df, random_state=16)
-    tok_cache = {}
-    quads = defaultdict(list)
-    for group in ("aa", "wh"):
-        rows = [c for c in cands if c["group"] == group]
-        for sent, emos in (("pos", HAPPY), ("neg", SAD)):
-            key = f"{sent}_{group}"
-            for i, _ in enumerate(emos):
-                field = "happy" if sent == "pos" else "sad"
-                for c in rows:
-                    if i not in c[field]:
-                        continue
-                    ident = id(c)
-                    if ident not in tok_cache:
-                        tok_cache[ident] = normalize_text(c["text"])
-                    toks = tok_cache[ident]
-                    if not valid_tokens(toks):
-                        continue
-                    quads[key].append(toks)
-    # quirk accounting
-    both = sum(1 for c in cands if c["happy"] and c["sad"])
-    multi = sum(1 for c in cands if len(c["happy"]) > 1 or len(c["sad"]) > 1)
-    stats["faithful_tweets_in_both_classes"] = both
-    stats["faithful_tweets_counted_multiple_times"] = multi
-    return quads
+        out, src = [], []
+        if mode == "clean":
+            buckets = [(None, res.get(q, []))]
+        else:
+            emos = HAPPY if q.startswith("pos") else SAD
+            buckets = [(emos[i], res.get((q, i), [])) for i in range(len(emos)) if (q, i) in res]
+        for emo, bucket in buckets:
+            rng.shuffle(bucket)
+            for key, text in bucket:
+                if key in dups:
+                    stats[f"sample_dropped_duplicate_{q}"] += 1
+                    continue
+                toks = normalize_text(text)
+                if not valid_tokens(toks):
+                    stats[f"sample_dropped_short_{q}"] += 1
+                    continue
+                out.append(toks)
+                src.append(emo)
+                if len(out) == NEED:
+                    break
+            if len(out) == NEED:
+                break
+        quads[q], origin[q] = out, src
+    return quads, origin
 
 
 def overlap_between_splits(quads):
-    """How many test sentences also appear in training (duplicates leak)."""
+    """Test sentences that also occur in training (possible in faithful mode)."""
     train, test = set(), []
     for q in QUADS:
-        for toks in quads[q][:TRAIN_PER_QUAD]:
-            train.add(" ".join(toks))
+        train.update(" ".join(t) for t in quads[q][:TRAIN_PER_QUAD])
         test += [" ".join(t) for t in quads[q][TRAIN_PER_QUAD:TRAIN_PER_QUAD + TEST_PER_QUAD]]
     return sum(1 for t in test if t in train)
+
+
+def emoji_composition(origin):
+    """Faithful mode: which emojis the train and test portions come from."""
+    comp = {}
+    for q, src in origin.items():
+        tr = Counter(src[:TRAIN_PER_QUAD])
+        te = Counter(src[TRAIN_PER_QUAD:TRAIN_PER_QUAD + TEST_PER_QUAD])
+        comp[q] = {"train": dict(tr.most_common()), "test": dict(te.most_common())}
+    return comp
 
 
 def main():
@@ -246,56 +318,53 @@ def main():
     ap.add_argument("input", help="TwitterAAE-full-v1.zip (read directly), or an unzipped file/folder")
     ap.add_argument("output", help="output folder, e.g. data/processed/sent_race")
     ap.add_argument("--mode", choices=["clean", "faithful"], default="clean")
-    ap.add_argument("--no-global-dedup", action="store_true",
-                    help="skip the second pass that removes duplicated texts")
-    ap.add_argument("--max-lines", type=int, default=None, help="read only the first N lines (testing)")
+    ap.add_argument("--max-lines", type=int, default=None, help="read only the first N lines (trial runs)")
     args = ap.parse_args()
 
+    rng = random.Random(SEED)
     files = find_inputs(args.input)
-    print("Reading:", ", ".join(describe(f) for f in files))
+    print("Reading:", ", ".join(describe(f) for f in files), flush=True)
     t0 = time.time()
-    cands, stats = scan(files, args.max_lines)
-    print(f"Pass 1 done: {len(cands):,} emoji tweets from {stats['lines_read']:,} lines "
-          f"({time.time() - t0:.0f}s)")
+    res, pop, hashes, emoji_counts, stats = scan(files, args.mode, args.max_lines, rng)
+    print(f"Scan done: {stats['lines_read']:,} lines in {stats['seconds_scanning']}s", flush=True)
+    dups = duplicated_keys(hashes)
+    stats["distinct_texts_occurring_more_than_once"] = len(dups)
+    del hashes
+    quads, origin = select(res, args.mode, dups, rng, stats)
 
-    if not args.no_global_dedup:
-        dups = duplicate_texts(files, cands, args.max_lines)
-        before = len(cands)
-        cands = [c for c in cands if c["key"] not in dups]
-        stats["dropped_duplicate_texts"] = before - len(cands)
-        print(f"Pass 2 done: removed {before - len(cands):,} duplicated tweets")
-
-    quads = select_clean(cands, stats) if args.mode == "clean" else select_faithful(cands, stats)
-
-    need = TRAIN_PER_QUAD + TEST_PER_QUAD + VAL_PER_QUAD
     os.makedirs(args.output, exist_ok=True)
     sizes = {}
     for q in QUADS:
-        avail = len(quads[q])
-        sizes[q] = {"available": avail, "written": min(avail, need)}
-        if avail < TRAIN_PER_QUAD + TEST_PER_QUAD:
-            print(f"WARNING: {q} has only {avail:,} tweets (paper split needs "
-                  f"{TRAIN_PER_QUAD + TEST_PER_QUAD:,}); the split will be smaller than the paper's.")
-        elif avail < need:
-            print(f"NOTE: {q} has {avail:,} tweets; the extra validation set will be carved "
-                  f"from training instead.")
+        got = len(quads[q])
+        sizes[q] = {"emoji_tweets_in_population": pop.get(q, 0), "written": got}
+        if got < TRAIN_PER_QUAD + TEST_PER_QUAD:
+            print(f"WARNING: {q} has only {got:,} usable tweets (paper split needs "
+                  f"{TRAIN_PER_QUAD + TEST_PER_QUAD:,}).")
         with open(os.path.join(args.output, q + ".txt"), "w", encoding="utf-8") as fh:
-            for toks in quads[q][:need]:
+            for toks in quads[q]:
                 fh.write(" ".join(toks) + "\n")
 
     report = {
         "mode": args.mode,
         "input_files": [describe(f) for f in files],
-        "stats": dict(stats),
+        "max_lines": args.max_lines,
         "quadrants": sizes,
+        "stats": dict(sorted(stats.items())),
         "test_sentences_also_in_train": overlap_between_splits(quads),
-        "mean_tokens": {q: round(sum(len(t) for t in quads[q][:need]) / max(1, min(len(quads[q]), need)), 2)
-                        for q in QUADS},
+        "mean_tokens": {q: round(sum(map(len, quads[q])) / max(1, len(quads[q])), 2) for q in QUADS},
+        "emoji_counts_highconf": {g: dict(c.most_common()) for g, c in emoji_counts.items()},
         "seconds": round(time.time() - t0, 1),
     }
-    with open(os.path.join(args.output, "data_report.json"), "w") as fh:
-        json.dump(report, fh, indent=2)
-    print(json.dumps(report, indent=2))
+    if args.mode == "faithful":
+        report["emoji_composition_train_vs_test"] = emoji_composition(origin)
+    with open(os.path.join(args.output, "data_report.json"), "w", encoding="utf-8") as fh:
+        json.dump(report, fh, indent=2, ensure_ascii=False)
+    with open(os.path.join(args.output, "examples.txt"), "w", encoding="utf-8") as fh:
+        for q in QUADS:
+            fh.write(f"== {q}\n" + "".join(" ".join(t) + "\n" for t in quads[q][:15]))
+    short = {k: report[k] for k in ("quadrants", "stats", "test_sentences_also_in_train", "mean_tokens", "seconds")}
+    print(json.dumps(short, indent=2, ensure_ascii=False))
+    print(f"\nWrote {args.output}/ (quadrant files, data_report.json, examples.txt)")
 
 
 if __name__ == "__main__":

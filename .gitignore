@@ -10,3 +10,4 @@ __pycache__/
 #       data/reddit/processed/ (the constructed dataset), results/, annotation/
 data/processed/*/*.txt
 !data/processed/*/data_report.json
+*.log

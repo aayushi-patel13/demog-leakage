@@ -56,15 +56,19 @@ cat results/twitteraae/results.md
 | E3 | post-hoc attacker on the E1 encoder: leakage, no defence | 64.5 |
 | E4 | adversarial training, lambda = 1: sentiment / leakage / delta | 64.7 / 56.0 / 5.0 |
 
-Investigation option: `--mode faithful` in `prepare_twitteraae.py` reproduces the
-original preprocessing exactly as written, including two quirks found on
-reading the code (see *Deviations*). Comparing its `data_report.json` with the
-clean run's shows how many tweets are affected.
+Both modes write `data_report.json`, which counts how many tweets each quirk
+of the original preprocessing affects (see *Deviations*), plus emoji
+frequencies per dialect group. `--mode faithful` builds the dataset the way the
+original code behaves as written, for an ablation against the clean data:
+
+```bash
+python src/prepare_twitteraae.py data/raw/TwitterAAE-full-v1.zip data/processed/sent_race_faithful --mode faithful
+```
 
 ## 2. Constructed dataset: US vs Nigerian English on Reddit
 
 ```bash
-python src/collect_reddit.py                  # ~1-2 h at 1 request/s; resumable
+python src/collect_reddit.py                  # ~2-3 h at 1 request/s; resumable
 python src/preprocess_reddit.py               # -> data/reddit/clean/
 python src/label_reddit.py                    # -> data/reddit/processed/{tokens,masked}/
 python src/annotation.py sample --n 50        # -> annotation/sample_for_annotation.csv (blind)
@@ -109,8 +113,10 @@ python src/experiments.py run-all --data data/processed/pan17_gb_us --epochs 20 
   in the default `clean` mode): tweets are collected emoji by emoji, so one with
   two different happy emojis is counted twice; the check meant to drop tweets
   with both happy and sad emojis compares tokens with regex strings and never
-  fires, so such tweets enter both classes; and quadrants are ordered by emoji
-  rather than shuffled, so train and test come from different emojis.
+  fires, so such tweets enter both classes; the pattern for the sob emoji has a
+  missing backslash, so under Python 2 it never matches and sob-only tweets are
+  never collected as sad; and quadrants are ordered by emoji rather than
+  shuffled, so train and test can come from different emojis.
 * **Gender/age branch not reproduced.** PAN16 ships tweet ids only and the
   Twitter API that rehydrated them is no longer free.
 * **Reddit access.** The proposal planned the official Reddit API; self-service

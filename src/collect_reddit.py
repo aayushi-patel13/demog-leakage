@@ -13,6 +13,7 @@ It is resumable: re-running continues from the last comment already saved.
 Usage:
   python src/collect_reddit.py                      # everything in the config
   python src/collect_reddit.py --max-per-sub 2000   # quick trial
+  python src/collect_reddit.py --only Nigeria lagos  # just these subreddits
 """
 import argparse
 import datetime as dt
@@ -123,13 +124,14 @@ def main():
     args = ap.parse_args()
     cfg = json.load(open(args.config))
     after, before = to_epoch(cfg["window"]["after"]), to_epoch(cfg["window"]["before"])
-    cap = args.max_per_sub or cfg["max_comments_per_subreddit"]
+    caps = cfg.get("max_comments_per_subreddit_by_group", {})
     os.makedirs(args.out, exist_ok=True)
     totals = {}
     for group, subs in cfg["groups"].items():
         for sub in subs:
             if args.only and sub not in args.only:
                 continue
+            cap = args.max_per_sub or caps.get(group, cfg["max_comments_per_subreddit"])
             totals[f"{group}/{sub}"] = collect_sub(group, sub, after, before, cap, args.out, args.pause)
     print(json.dumps(totals, indent=2))
 
