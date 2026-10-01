@@ -4,7 +4,9 @@
 # The numbers it prints are meaningless; only "SMOKE TEST PASSED" matters.
 set -euo pipefail
 python tests/make_mock_twitteraae.py --rows 60000 --out data/mock/TwitterAAE-full-v1
-python src/prepare_twitteraae.py data/mock/TwitterAAE-full-v1 data/mock/sent_race > /dev/null
+(cd data/mock && rm -f TwitterAAE-full-v1.zip && python -m zipfile -c TwitterAAE-full-v1.zip TwitterAAE-full-v1)
+python src/prepare_twitteraae.py data/mock/TwitterAAE-full-v1.zip data/mock/sent_race > /dev/null
+python src/prepare_twitteraae.py data/mock/TwitterAAE-full-v1.zip data/mock/sent_race_faithful --mode faithful > /dev/null
 python tests/mock_reddit.py
 python src/preprocess_reddit.py --raw data/mock/reddit_raw --out data/mock/reddit_clean > /dev/null
 python src/label_reddit.py --clean data/mock/reddit_clean/comments.jsonl --out data/mock/reddit_processed > /dev/null
