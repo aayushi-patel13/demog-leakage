@@ -31,16 +31,19 @@ lat/lon, census_blockgroup, text, P(AA), P(Hispanic), P(Other), P(White)).
 Either twitteraae_all, or the twitteraae_all_aa / twitteraae_all_white subsets.
 
 Usage:
-  python src/prepare_twitteraae.py data/raw/TwitterAAE-full-v1 data/processed/sent_race
+  python src/prepare_twitteraae.py data/raw/TwitterAAE-full-v1.zip data/processed/sent_race
   python src/prepare_twitteraae.py <in> <out> --mode faithful
 """
 import argparse
+import contextlib
 import hashlib
+import io
 import json
 import os
 import random
 import sys
 import time
+import zipfile
 from collections import Counter, defaultdict
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -55,20 +58,47 @@ VAL_PER_QUAD = 2500  # extra held-out set (not in the paper) for honest model se
 QUADS = ["pos_aa", "pos_wh", "neg_aa", "neg_wh"]
 
 
+def _pick(names):
+    """Choose which TwitterAAE files to read from a list of (base)names."""
+    base = {os.path.basename(n): n for n in names if not n.endswith("/")}
+    if "twitteraae_all_aa" in base and "twitteraae_all_white" in base:
+        return [base["twitteraae_all_aa"], base["twitteraae_all_white"]]
+    if "twitteraae_all" in base:
+        return [base["twitteraae_all"]]
+    return sorted(v for k, v in base.items() if k.startswith("twitteraae") and not k.endswith(".zip"))
+
+
 def find_inputs(path):
-    """Return the list of TwitterAAE files to read."""
+    """Files to read. `path` may be a file, a folder, or the downloaded .zip itself
+    (read directly, without unzipping, which saves ~15 GB of disk)."""
+    if path.endswith(".zip") and os.path.isfile(path):
+        with zipfile.ZipFile(path) as zf:
+            chosen = _pick(zf.namelist())
+        if not chosen:
+            raise SystemExit(f"No TwitterAAE file inside {path}")
+        return [(path, m) for m in chosen]
     if os.path.isfile(path):
         return [path]
     names = os.listdir(path)
-    subsets = [n for n in names if n in ("twitteraae_all_aa", "twitteraae_all_white")]
-    if len(subsets) == 2:
-        return [os.path.join(path, n) for n in sorted(subsets)]
-    if "twitteraae_all" in names:
-        return [os.path.join(path, "twitteraae_all")]
-    cands = [n for n in names if n.startswith("twitteraae")]
-    if cands:
-        return [os.path.join(path, n) for n in sorted(cands)]
+    chosen = _pick(names)
+    if chosen:
+        return [os.path.join(path, n) for n in chosen]
     raise SystemExit(f"No TwitterAAE file found in {path}. Contents: {names[:20]}")
+
+
+@contextlib.contextmanager
+def open_source(src):
+    """Open a plain file, or a (zip, member) pair, as a text stream."""
+    if isinstance(src, tuple):
+        with zipfile.ZipFile(src[0]) as zf, zf.open(src[1]) as raw:
+            yield io.TextIOWrapper(raw, encoding="utf-8", errors="replace")
+    else:
+        with open(src, encoding="utf-8", errors="replace") as fh:
+            yield fh
+
+
+def describe(src):
+    return f"{src[0]}::{src[1]}" if isinstance(src, tuple) else src
 
 
 def parse_line(line):
@@ -94,7 +124,7 @@ def scan(files, max_lines=None):
     cands = []  # dicts: key (md5 of raw text), text, group, happy, sad
     t0 = time.time()
     for fn in files:
-        with open(fn, encoding="utf-8", errors="replace") as fh:
+        with open_source(fn) as fh:
             for line in fh:
                 stats["lines_read"] += 1
                 if max_lines and stats["lines_read"] > max_lines:
@@ -130,7 +160,7 @@ def duplicate_texts(files, cands, max_lines=None):
     counts = Counter()
     n = 0
     for fn in files:
-        with open(fn, encoding="utf-8", errors="replace") as fh:
+        with open_source(fn) as fh:
             for line in fh:
                 n += 1
                 if max_lines and n > max_lines:
@@ -213,7 +243,7 @@ def overlap_between_splits(quads):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("input", help="TwitterAAE file or folder (unzipped TwitterAAE-full-v1)")
+    ap.add_argument("input", help="TwitterAAE-full-v1.zip (read directly), or an unzipped file/folder")
     ap.add_argument("output", help="output folder, e.g. data/processed/sent_race")
     ap.add_argument("--mode", choices=["clean", "faithful"], default="clean")
     ap.add_argument("--no-global-dedup", action="store_true",
@@ -222,7 +252,7 @@ def main():
     args = ap.parse_args()
 
     files = find_inputs(args.input)
-    print("Reading:", ", ".join(files))
+    print("Reading:", ", ".join(describe(f) for f in files))
     t0 = time.time()
     cands, stats = scan(files, args.max_lines)
     print(f"Pass 1 done: {len(cands):,} emoji tweets from {stats['lines_read']:,} lines "
@@ -255,7 +285,7 @@ def main():
 
     report = {
         "mode": args.mode,
-        "input_files": files,
+        "input_files": [describe(f) for f in files],
         "stats": dict(stats),
         "quadrants": sizes,
         "test_sentences_also_in_train": overlap_between_splits(quads),
