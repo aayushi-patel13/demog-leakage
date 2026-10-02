@@ -6,12 +6,12 @@ The paper uses 44,000 tweets per quadrant (41,500 train + 2,500 test).
 
 | Quadrant | Available in corpus | Written | Distinct | Also under the opposite label | Train / val / test |
 |---|---:|---:|---:|---:|---|
-| pos_aa | 72,216 | 46,500 | 45,906 | 118 | 26,760 / 2,500 / 2,500 |
-| pos_wh | 1,478,256 | 46,500 | 45,318 | 178 | 26,760 / 2,500 / 2,500 |
-| neg_aa | 38,739 | 31,760 (short of 44,000) | 31,546 | 118 | 26,760 / 2,500 / 2,500 |
-| neg_wh | 733,037 | 46,500 | 45,724 | 178 | 26,760 / 2,500 / 2,500 |
+| pos_aa | 72,216 | 46,500 | 46,500 | 0 | 26,108 / 2,500 / 2,500 |
+| pos_wh | 1,478,256 | 46,500 | 46,500 | 0 | 26,108 / 2,500 / 2,500 |
+| neg_aa | 38,739 | 31,108 (short of 44,000) | 31,108 | 0 | 26,108 / 2,500 / 2,500 |
+| neg_wh | 733,037 | 46,500 | 46,500 | 0 | 26,108 / 2,500 / 2,500 |
 
-Test sentences also in training (paper split): 216. Mean tokens per tweet: pos_aa 10.34, pos_wh 10.83, neg_aa 10.17, neg_wh 11.31.
+Test sentences also in training (paper split): 0. Mean tokens per tweet: pos_aa 10.49, pos_wh 11.18, neg_aa 10.3, neg_wh 11.58.
 
 ### Original preprocessing as written (ablation) (`data/processed/sent_race_faithful`)
 
