@@ -50,12 +50,18 @@ def make_splits(folder, train=41500, test=2500, val=2500, seed=16):
     if os.path.exists(os.path.join(folder, "split.json")):
         fixed = json.load(open(os.path.join(folder, "split.json")))
     n_min = min(len(v) for v in data.values())
-    if not fixed and n_min < train + test + val:
+    carve = False
+    if not fixed and n_min < train + test:
         # Not enough for the paper's sizes in every quadrant: use the same
         # sizes for all four so the data stays balanced (test and validation
         # each min(2,500, 10%), training the rest, at most the paper's 41,500).
         test = val = min(test, max(1, round(0.1 * n_min)))
         train = min(train, n_min - test - val)
+    elif not fixed and n_min < train + test + val:
+        # The paper's train/test split fits but a separate validation set does
+        # not: keep the paper's test rows and take validation from the end of
+        # training, in every quadrant, so the quadrants stay balanced.
+        carve = True
     splits = {"train": [], "test": [], "val": []}
     for name, y, z in QUADS:
         rows = data[name]
@@ -65,7 +71,7 @@ def make_splits(folder, train=41500, test=2500, val=2500, seed=16):
             val = min(val, train // 10)
         tr = rows[:train]
         te = rows[train:train + test]
-        va = [] if fixed else rows[train + test:train + test + val]
+        va = [] if (fixed or carve) else rows[train + test:train + test + val]
         if len(va) < val:  # carve validation from the end of training
             k = min(val, len(tr) // 10)
             va, tr = tr[-k:], tr[:-k]
