@@ -12,7 +12,8 @@ demographic attribute well above chance.
 
 | Path | What it does |
 |---|---|
-| `src/prepare_twitteraae.py` | builds the paper's balanced sentiment/race data (166k train / 10k test) from TwitterAAE, streaming, in 8 GB RAM |
+| `src/prepare_twitteraae.py` | builds the paper's balanced sentiment/race data (up to 166k train / 10k test) from TwitterAAE, streaming, in 8 GB RAM |
+| `src/report_twitteraae.py` | summary of the prepared data (sizes, repeats, label conflicts, quirk counts) for the write-up |
 | `src/models.py`, `src/optim.py` | PyTorch port of the original DyNet model: 300-d embeddings, 300-d LSTM, 300-d tanh heads, gradient reversal, DyNet-style momentum SGD |
 | `src/experiments.py` | trains encoders, runs post-hoc attackers, writes a results table next to the paper's numbers |
 | `src/collect_reddit.py` | collects comments from US and Nigerian subreddits through the Arctic Shift archive API |
@@ -60,6 +61,13 @@ cat results/twitteraae/results.md
 | E3 | post-hoc attacker on the E1 encoder: leakage, no defence | 64.5 |
 | E4 | adversarial training, lambda = 1: sentiment / leakage / delta | 64.7 / 56.0 / 5.0 |
 
+`python src/report_twitteraae.py` summarises both prepared datasets in
+`results/twitteraae_data.md`: tweets available and written per quadrant,
+repeats, tweets under both labels, the split sizes used, and the quirk counts.
+If a quadrant is short of the paper's 44,000 tweets, all four quadrants get the
+same smaller sizes (test and validation 2,500 each, training the rest), so the
+data stays balanced and the attacker's chance level stays at 50%.
+
 Both modes write `data_report.json`, which counts how many tweets each quirk
 of the original preprocessing affects (see *Deviations*), plus emoji
 frequencies per dialect group. `--mode faithful` builds the dataset the way the
@@ -72,7 +80,7 @@ python src/prepare_twitteraae.py data/raw/TwitterAAE-full-v1.zip data/processed/
 ## 2. Constructed dataset: US vs Nigerian English on Reddit
 
 ```bash
-python src/collect_reddit.py                  # ~2-3 h at 1 request/s; resumable
+python src/collect_reddit.py                  # a few hours at 1 request/s; resumable
 python src/preprocess_reddit.py               # -> data/reddit/clean/
 python src/label_reddit.py                    # -> data/reddit/processed/{tokens,masked}/
 python src/annotation.py sample --n 50        # -> annotation/sample_for_annotation.csv (blind)
@@ -84,6 +92,14 @@ python src/experiments.py run-all --data data/reddit/processed/tokens --epochs 2
 python src/experiments.py run-all --data data/reddit/processed/masked --epochs 20 \
     --tag reddit_masked --attribute "variety (NG vs US)" --no-paper
 ```
+
+Sampling: the US subreddits are busy (thousands of comments a day in the
+largest), so each contributes up to 100 comments per day, taken from a random
+start time each day, which spreads the sample over all 18 months and all
+hours of the day. Taking the first comments in time order instead would put
+the whole US sample in the first days of January 2024 while the Nigerian
+sample spans the full window, a time and topic confound. The Nigerian
+subreddits are far smaller and are collected in full.
 
 The archive answers HTTP 422 when a query is too expensive (large subreddits
 over a long time range); the collector then narrows its time window and

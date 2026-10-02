@@ -1,5 +1,6 @@
 {
-  "_comment": "Subreddits used as a proxy for English variety. ng = Nigerian English (z = 1), us = United States English (z = 0). Both sides are general local-life discussion rather than one topic. Nigerian subreddits are smaller, so they get a higher cap per subreddit to balance the groups.",
+  "_comment": "Subreddits used as a proxy for English variety. ng = Nigerian English (z = 1), us = United States English (z = 0). Both sides are general local-life discussion rather than one topic.",
+  "_sampling": "US subreddits are busy (thousands of comments a day in the largest), so each gets up to 100 comments per day, from a random start time each day, across the whole window. The Nigerian subreddits are far smaller and are collected in full (the cap is only a safety limit).",
   "window": {
     "after": "2024-01-01",
     "before": "2025-07-01"
@@ -20,7 +21,10 @@
     ]
   },
   "max_comments_per_subreddit_by_group": {
-    "ng": 250000,
+    "ng": 400000,
     "us": 60000
+  },
+  "comments_per_day_by_group": {
+    "us": 100
   }
 }
