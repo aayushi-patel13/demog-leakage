@@ -33,12 +33,19 @@ def quad_file(folder, name):
     raise FileNotFoundError(f"no {ALIASES[name]} file in {folder}")
 
 
+def read_lines(path):
+    """Non-empty lines of a dataset file, split on "\n" only. (splitlines() and
+    universal-newline reading also break at \r, \u2028 and similar characters,
+    which can occur inside a tweet and would cut it in two.)"""
+    with open(path, encoding="utf-8", newline="") as fh:
+        return [ln for ln in fh.read().split("\n") if ln.strip()]
+
+
 def read_quadrants(folder):
     data = {}
     for name, _, _ in QUADS:
         path, _ = quad_file(folder, name)
-        with open(path, encoding="utf-8") as fh:
-            data[name] = [ln.split() for ln in fh.read().splitlines() if ln.strip()]
+        data[name] = [ln.split() for ln in read_lines(path)]
     return data
 
 

@@ -27,7 +27,10 @@ only a few hundred thousand tweets are ever held in memory.
 
 Modes
   clean (default): tweets with both happy and sad emojis are dropped, each
-      tweet is used once, quadrants are in random order.
+      tweet is used once, quadrants are in random order, and tweets whose
+      text is identical to another's after normalisation (same words, a
+      different mention, link or emoji) are removed, so no text appears under
+      both labels or in both training and test.
   faithful: reproduces how the original code behaves as written:
       - tweets are collected emoji by emoji, so a tweet with two different
         happy emojis is added twice;
@@ -266,6 +269,8 @@ def duplicated_keys(hashes):
 
 
 def select(res, mode, dups, rng, stats):
+    if mode == "clean":
+        return select_clean(res, dups, rng, stats)
     quads, origin = {}, {}
     for q in QUADS:
         out, src = [], []
@@ -291,6 +296,43 @@ def select(res, mode, dups, rng, stats):
             if len(out) == NEED:
                 break
         quads[q], origin[q] = out, src
+    return quads, origin
+
+
+def select_clean(res, dups, rng, stats):
+    """Clean mode: besides exact duplicates of the raw text, drop every tweet
+    whose text is identical to another candidate's after normalisation (all
+    copies, as for raw duplicates). Tweets that differ only in the mention,
+    link or emoji would otherwise appear twice, possibly under both labels or
+    in both training and test."""
+    pools, seen_norm = {}, Counter()
+    for q in QUADS:
+        bucket = res.get(q, [])
+        rng.shuffle(bucket)
+        pool = []
+        for key, text in bucket:
+            if key in dups:
+                stats[f"sample_dropped_duplicate_{q}"] += 1
+                continue
+            toks = normalize_text(text)
+            if not valid_tokens(toks):
+                stats[f"sample_dropped_short_{q}"] += 1
+                continue
+            line = " ".join(toks)
+            seen_norm[line] += 1
+            pool.append(line)
+        pools[q] = pool
+    quads, origin = {}, {}
+    for q in QUADS:
+        out = []
+        for line in pools[q]:
+            if seen_norm[line] > 1:
+                stats[f"sample_dropped_same_after_normalising_{q}"] += 1
+                continue
+            out.append(line.split(" "))
+            if len(out) == NEED:
+                break
+        quads[q], origin[q] = out, [None] * len(out)
     return quads, origin
 
 

@@ -119,8 +119,9 @@ def normalize_text(text):
     toks = twokenize.simpleTokenize(no_emojis)
     out = []
     for t in toks:
-        t = t.replace("\n", "")
-        if not t:
-            continue
-        out.append(MENTION if t.startswith("@") else t)
+        # twokenize splits on spaces only, so a token can still hold \r, \u2028
+        # or a tab; those would break the one-tweet-per-line files, so split
+        # on any whitespace (the original's Python 2 readers did the same)
+        for piece in t.replace("\n", "").split():
+            out.append(MENTION if piece.startswith("@") else piece)
     return out

@@ -9,6 +9,22 @@ python src/prepare_twitteraae.py data/mock/TwitterAAE-full-v1.zip data/mock/sent
 python src/prepare_twitteraae.py data/mock/TwitterAAE-full-v1.zip data/mock/sent_race_faithful --mode faithful > /dev/null
 python src/report_twitteraae.py --clean data/mock/sent_race --faithful data/mock/sent_race_faithful \
   --out data/mock/twitteraae_data.md > /dev/null
+python - <<'EOF'
+# clean data: one tweet per line, nothing repeated, nothing under both labels
+import json, sys
+sys.path.insert(0, "src")
+from data import read_lines
+rep = json.load(open("data/mock/sent_race/data_report.json"))
+lines = {q: read_lines(f"data/mock/sent_race/{q}.txt") for q in rep["quadrants"]}
+for q, v in rep["quadrants"].items():
+    assert len(lines[q]) == v["written"], (q, len(lines[q]), v["written"])
+    with open(f"data/mock/sent_race/{q}.txt", encoding="utf-8") as fh:
+        assert len(fh.read().splitlines()) == v["written"], f"{q}: a tweet spans two lines"
+allx = [l for v in lines.values() for l in v]
+assert len(allx) == len(set(allx)), "clean data has repeated texts"
+assert rep["test_sentences_also_in_train"] == 0
+print("clean data checks OK")
+EOF
 python tests/mock_reddit.py
 python src/preprocess_reddit.py --raw data/mock/reddit_raw --out data/mock/reddit_clean > /dev/null
 python src/label_reddit.py --clean data/mock/reddit_clean/comments.jsonl --out data/mock/reddit_processed > /dev/null

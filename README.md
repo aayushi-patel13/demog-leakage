@@ -142,6 +142,11 @@ python src/experiments.py run-all --data data/processed/pan17_gb_us --epochs 20 
   missing backslash, so under Python 2 it never matches and sob-only tweets are
   never collected as sad; and quadrants are ordered by emoji rather than
   shuffled, so train and test can come from different emojis.
+* **Duplicates after normalisation** (`clean` mode only). The original removes
+  tweets whose raw text repeats, but different raw tweets can become the same
+  token sequence once mentions, links and emojis are normalised away; on the
+  full corpus about 2% of test sentences also occurred in training, and some
+  texts appeared under both labels. The clean data drops every such text.
 * **Gender/age branch not reproduced.** PAN16 ships tweet ids only and the
   Twitter API that rehydrated them is no longer free.
 * **Reddit access.** The proposal planned the official Reddit API; self-service
