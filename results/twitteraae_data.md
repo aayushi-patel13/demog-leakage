@@ -6,10 +6,10 @@ The paper uses 44,000 tweets per quadrant (41,500 train + 2,500 test).
 
 | Quadrant | Available in corpus | Written | Distinct | Also under the opposite label | Train / val / test |
 |---|---:|---:|---:|---:|---|
-| pos_aa | 72,216 | 46,501 | 45,907 | 118 | 26,761 / 2,500 / 2,500 |
-| pos_wh | 1,478,256 | 46,501 | 45,319 | 178 | 26,761 / 2,500 / 2,500 |
-| neg_aa | 38,739 | 31,761 (short of 44,000) | 31,547 | 118 | 26,761 / 2,500 / 2,500 |
-| neg_wh | 733,037 | 46,500 | 45,724 | 178 | 26,761 / 2,500 / 2,500 |
+| pos_aa | 72,216 | 46,500 | 45,906 | 118 | 26,760 / 2,500 / 2,500 |
+| pos_wh | 1,478,256 | 46,500 | 45,318 | 178 | 26,760 / 2,500 / 2,500 |
+| neg_aa | 38,739 | 31,760 (short of 44,000) | 31,546 | 118 | 26,760 / 2,500 / 2,500 |
+| neg_wh | 733,037 | 46,500 | 45,724 | 178 | 26,760 / 2,500 / 2,500 |
 
 Test sentences also in training (paper split): 216. Mean tokens per tweet: pos_aa 10.34, pos_wh 10.83, neg_aa 10.17, neg_wh 11.31.
 
@@ -17,10 +17,10 @@ Test sentences also in training (paper split): 216. Mean tokens per tweet: pos_a
 
 | Quadrant | Available in corpus | Written | Distinct | Also under the opposite label | Train / val / test |
 |---|---:|---:|---:|---:|---|
-| pos_aa | 84,199 | 46,501 | 45,263 | 5,185 | 39,000 / 2,500 / 2,500 |
-| pos_wh | 1,517,907 | 46,501 | 44,700 | 298 | 39,000 / 2,500 / 2,500 |
-| neg_aa | 47,135 | 44,047 | 38,250 | 5,185 | 39,000 / 2,500 / 2,500 |
-| neg_wh | 678,442 | 46,501 | 44,942 | 298 | 39,000 / 2,500 / 2,500 |
+| pos_aa | 84,199 | 46,500 | 45,262 | 5,185 | 39,000 / 2,500 / 2,500 |
+| pos_wh | 1,517,907 | 46,500 | 44,699 | 298 | 39,000 / 2,500 / 2,500 |
+| neg_aa | 47,135 | 44,046 | 38,249 | 5,185 | 39,000 / 2,500 / 2,500 |
+| neg_wh | 678,442 | 46,500 | 44,941 | 298 | 39,000 / 2,500 / 2,500 |
 
 Test sentences also in training (paper split): 1,687. Mean tokens per tweet: pos_aa 10.7, pos_wh 11.17, neg_aa 10.68, neg_wh 11.38.
 
