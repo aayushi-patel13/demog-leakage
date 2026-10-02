@@ -7,7 +7,8 @@ with the text stored as a JSON string (emojis as \\uXXXX surrogate pairs,
 newlines as \\n). Dialect and sentiment are planted in the vocabulary, and the
 original code's corner cases are included: tweets with both happy and sad
 emojis, two different happy emojis, sob-only sad tweets, exact duplicates
-(also across confidence levels), newlines, quotes, URLs, non-English text.
+(also across confidence levels), tweets identical except for the mention and
+emoji, newlines and other line-break characters, quotes, URLs, non-English text.
 
 It is NOT data and its numbers mean nothing; it only proves the code runs.
 """
@@ -59,6 +60,8 @@ def make_tweet(rng, group, sent, emoji_rate):
     text = " ".join(words)
     if rng.random() < 0.05:
         text = text.replace(" ", "\n", 1)
+    elif rng.random() < 0.02:   # characters that str.splitlines() treats as line breaks
+        text = text.replace(" ", rng.choice(["\r", "\u2028", "\x85", "\x0b"]), 1)
     if rng.random() < 0.02:
         text = '"' + text + '" he said'
     return text
@@ -90,6 +93,9 @@ def main():
                 text = rng.choice(OTHER)
             elif recent and rng.random() < 0.01:
                 text = rng.choice(recent)  # exact duplicate, possibly at another confidence
+            elif rng.random() < 0.01:      # same words, another mention and emoji
+                text = rng.choice(["@a", "@b", "@c"]) + " same words every time here " + \
+                    rng.choice(HAPPY + SAD)
             else:
                 text = make_tweet(rng, group, rng.choice(["pos", "neg"]), args.emoji_rate)
             recent = (recent + [text])[-50:]

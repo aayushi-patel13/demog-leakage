@@ -16,15 +16,14 @@ import sys
 from collections import Counter
 
 sys.path.insert(0, os.path.dirname(__file__))
-from data import QUADS, make_splits  # noqa: E402
+from data import QUADS, make_splits, read_lines  # noqa: E402
 
 PAPER_PER_QUAD = 41500 + 2500
 OPPOSITE = {"pos_aa": "neg_aa", "neg_aa": "pos_aa", "pos_wh": "neg_wh", "neg_wh": "pos_wh"}
 
 
 def lines(folder, q):
-    with open(os.path.join(folder, q + ".txt"), encoding="utf-8") as fh:
-        return [ln for ln in fh.read().splitlines() if ln.strip()]
+    return [" ".join(ln.split()) for ln in read_lines(os.path.join(folder, q + ".txt"))]
 
 
 def describe(folder, title):
