@@ -78,17 +78,22 @@ def main():
                         ", ".join(f"{n:,} {k}" for k, n in sorted(one.items())) + ")")
         md += ["", f"Total {lab['total']:,} comments, balanced across the four quadrants and matched on "
                f"length (3-5, 6-10, 11-20, 21-40 tokens){src_note}.", ""]
-    sc = load(os.path.join(args.annotation, "sample_annotated_scores.json"))
-    if sc:
-        md += ["### Human annotation (blind sample)", ""]
+    for fname, title in (("sample_annotated_scores.json", "Human annotation (blind sample)"),
+                         ("sample_llm_judge_scores.json",
+                          "LLM judge (Claude, zero-shot, text only, blind to labels; see annotation/LLM_JUDGE.md)")):
+        sc = load(os.path.join(args.annotation, fname))
+        if not sc:
+            continue
+        who, Who = ("LLM", "LLM") if "llm" in fname else ("human", "Human")
+        md += [f"### {title}", ""]
         if "sentiment_agreement_pct" in sc:
             by = sc.get("agreement_by_label_source", {})
-            md += [f"* Distant sentiment label matches the human label in {sc['sentiment_agreement_pct']}% of "
-                   f"{sc['annotated_sentiment']} comments (Cohen's kappa {sc['sentiment_kappa']}); the human "
+            md += [f"* Distant sentiment label matches the {who} label in {sc['sentiment_agreement_pct']}% of "
+                   f"{sc['annotated_sentiment']} comments (Cohen's kappa {sc['sentiment_kappa']}); the {who} "
                    f"called {sc['human_said_neutral_pct']}% neutral. By source: " +
                    ", ".join(f"{s} {v['agreement_pct']}% (n={v['n']})" for s, v in by.items()) + "."]
         if "variety_accuracy_unsure_as_chance_pct" in sc:
-            md += [f"* Human guess of NG vs US from the text alone: "
+            md += [f"* {Who} guess of NG vs US from the text alone: "
                    f"{sc.get('variety_accuracy_when_decided_pct', '-')}% correct when decided, "
                    f"{sc['variety_unsure_pct']}% unsure; {sc['variety_accuracy_unsure_as_chance_pct']}% "
                    "counting unsure as a coin flip (comparable to an attacker's accuracy, chance = 50%)."]

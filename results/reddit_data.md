@@ -40,3 +40,8 @@ Sentiment labels (before balancing): NG emoji 5,955, NG vader 15,568, US emoji 1
 
 Total 22,340 comments, balanced across the four quadrants and matched on length (3-5, 6-10, 11-20, 21-40 tokens) and on label source (each quadrant: 505 emoji, 5,080 vader).
 
+### LLM judge (Claude, zero-shot, text only, blind to labels; see annotation/LLM_JUDGE.md)
+
+* Distant sentiment label matches the LLM label in 60.0% of 200 comments (Cohen's kappa 0.375); the LLM called 28.0% neutral. By source: vader 61.1% (n=185), emoji 46.7% (n=15).
+* LLM guess of NG vs US from the text alone: 95.5% correct when decided, 45.0% unsure; 75.0% counting unsure as a coin flip (comparable to an attacker's accuracy, chance = 50%).
+

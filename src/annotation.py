@@ -1,7 +1,8 @@
 """Draw a blind annotation sample from the Reddit dataset, and score it.
 
   python src/annotation.py sample --n 50          # 50 per quadrant -> 200 comments
-  python src/annotation.py score  annotation/sample_for_annotation.csv
+  python src/annotation.py score  annotation/sample_annotated.csv     # human
+  python src/annotation.py score  annotation/sample_llm_judge.csv     # LLM judge
 
 `sample` writes two files:
   annotation/sample_for_annotation.csv  what the annotator sees: the comment
@@ -75,6 +76,8 @@ def kappa(a, b):
 def score(args):
     key = {r["id"]: r for r in csv.DictReader(open(args.key, encoding="utf-8"))}
     rows = [r for r in csv.DictReader(open(args.sheet, encoding="utf-8-sig"))]
+    # a human sheet has human_* columns; the LLM-judge sheet has llm_* columns
+    who = "llm" if rows and "llm_sentiment" in rows[0] else "human"
     norm_s = {"pos": "pos", "positive": "pos", "p": "pos", "neg": "neg", "negative": "neg", "n": "neg",
               "neutral": "neutral", "neu": "neutral", "mixed": "neutral", "": None}
     norm_v = {"ng": "ng", "nigeria": "ng", "nigerian": "ng", "us": "us", "usa": "us", "american": "us",
@@ -84,14 +87,14 @@ def score(args):
         k = key.get(r["id"])
         if not k:
             continue
-        hs = norm_s.get(r["human_sentiment"].strip().lower())
-        hv = norm_v.get(r["human_variety"].strip().lower())
+        hs = norm_s.get((r.get(f"{who}_sentiment") or "").strip().lower())
+        hv = norm_v.get((r.get(f"{who}_variety") or "").strip().lower())
         if hs:
             sent_pairs.append((k["distant_sentiment"], hs))
             by_src[k["label_source"]].append((k["distant_sentiment"], hs))
         if hv:
             var_rows.append((k["group"], hv))
-    res = {"annotated_sentiment": len(sent_pairs), "annotated_variety": len(var_rows)}
+    res = {"annotator": who, "annotated_sentiment": len(sent_pairs), "annotated_variety": len(var_rows)}
     if sent_pairs:
         res["sentiment_agreement_pct"] = round(100 * sum(a == b for a, b in sent_pairs) / len(sent_pairs), 1)
         res["sentiment_kappa"] = round(kappa([a for a, _ in sent_pairs], [b for _, b in sent_pairs]), 3)
