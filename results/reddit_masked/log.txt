@@ -1,0 +1,127 @@
+== E1: encoder trained on sentiment only
+[train] target=y lambda=0.0 epochs=20 train=18,108 val=2,012 test=2,220 vocab=30,438 device=cuda
+  {"epoch": 1, "loss": 0.5921922578226001, "val_acc": 79.57256461232605, "test_acc": 79.72972972972973, "val_adv_acc": null, "test_adv_acc": null, "secs": 4.7}
+  {"epoch": 2, "loss": 0.39898943764130645, "val_acc": 84.1948310139165, "test_acc": 83.33333333333333, "val_adv_acc": null, "test_adv_acc": null, "secs": 3.9}
+  {"epoch": 3, "loss": 0.27261105283143533, "val_acc": 85.93439363817097, "test_acc": 85.58558558558559, "val_adv_acc": null, "test_adv_acc": null, "secs": 4.4}
+  {"epoch": 4, "loss": 0.19003220397904136, "val_acc": 86.67992047713717, "test_acc": 86.35135135135135, "val_adv_acc": null, "test_adv_acc": null, "secs": 4.4}
+  {"epoch": 5, "loss": 0.13320310609812225, "val_acc": 87.57455268389663, "test_acc": 85.990990990991, "val_adv_acc": null, "test_adv_acc": null, "secs": 3.9}
+  {"epoch": 6, "loss": 0.10290145160235763, "val_acc": 86.77932405566601, "test_acc": 86.44144144144144, "val_adv_acc": null, "test_adv_acc": null, "secs": 4.0}
+  {"epoch": 7, "loss": 0.07860676863824594, "val_acc": 86.87872763419483, "test_acc": 86.26126126126127, "val_adv_acc": null, "test_adv_acc": null, "secs": 4.6}
+  {"epoch": 8, "loss": 0.05385984320717539, "val_acc": 87.72365805168987, "test_acc": 86.12612612612612, "val_adv_acc": null, "test_adv_acc": null, "secs": 3.9}
+  {"epoch": 9, "loss": 0.040782482287685676, "val_acc": 87.67395626242545, "test_acc": 86.98198198198199, "val_adv_acc": null, "test_adv_acc": null, "secs": 4.0}
+  {"epoch": 10, "loss": 0.030284801918630106, "val_acc": 87.02783300198807, "test_acc": 85.58558558558559, "val_adv_acc": null, "test_adv_acc": null, "secs": 4.9}
+  {"epoch": 11, "loss": 0.02032868343871223, "val_acc": 87.37574552683897, "test_acc": 86.35135135135135, "val_adv_acc": null, "test_adv_acc": null, "secs": 3.9}
+  {"epoch": 12, "loss": 0.011826777600033068, "val_acc": 87.47514910536779, "test_acc": 86.98198198198199, "val_adv_acc": null, "test_adv_acc": null, "secs": 3.8}
+  {"epoch": 13, "loss": 0.007487371770092091, "val_acc": 86.58051689860835, "test_acc": 86.71171171171171, "val_adv_acc": null, "test_adv_acc": null, "secs": 4.7}
+  {"epoch": 14, "loss": 0.004282546060949009, "val_acc": 86.18290258449304, "test_acc": 87.34234234234235, "val_adv_acc": null, "test_adv_acc": null, "secs": 3.9}
+  {"epoch": 15, "loss": 0.004761823001733535, "val_acc": 86.67992047713717, "test_acc": 87.34234234234235, "val_adv_acc": null, "test_adv_acc": null, "secs": 3.9}
+  {"epoch": 16, "loss": 0.0004698167661018416, "val_acc": 87.02783300198807, "test_acc": 87.65765765765765, "val_adv_acc": null, "test_adv_acc": null, "secs": 4.3}
+  {"epoch": 17, "loss": 0.001202948711092289, "val_acc": 86.77932405566601, "test_acc": 87.25225225225225, "val_adv_acc": null, "test_adv_acc": null, "secs": 4.3}
+  {"epoch": 18, "loss": 1.8338341396705366e-05, "val_acc": 87.07753479125249, "test_acc": 87.70270270270271, "val_adv_acc": null, "test_adv_acc": null, "secs": 3.8}
+  {"epoch": 19, "loss": 3.959715388565234e-06, "val_acc": 87.07753479125249, "test_acc": 87.34234234234235, "val_adv_acc": null, "test_adv_acc": null, "secs": 3.8}
+  {"epoch": 20, "loss": 2.3923136564404804e-06, "val_acc": 87.02783300198807, "test_acc": 87.7927927927928, "val_adv_acc": null, "test_adv_acc": null, "secs": 4.7}
+== E2: encoder trained on variety (NG vs US) only
+[train] target=z lambda=0.0 epochs=20 train=18,108 val=2,012 test=2,220 vocab=30,438 device=cuda
+  {"epoch": 1, "loss": 0.6801507342380484, "val_acc": 63.767395626242546, "test_acc": 63.24324324324324, "val_adv_acc": null, "test_adv_acc": null, "secs": 3.8}
+  {"epoch": 2, "loss": 0.6133135117150996, "val_acc": 67.79324055666004, "test_acc": 67.25225225225225, "val_adv_acc": null, "test_adv_acc": null, "secs": 3.8}
+  {"epoch": 3, "loss": 0.5332029974431636, "val_acc": 65.55666003976143, "test_acc": 67.02702702702703, "val_adv_acc": null, "test_adv_acc": null, "secs": 4.8}
+  {"epoch": 4, "loss": 0.4410514090006942, "val_acc": 69.03578528827038, "test_acc": 71.35135135135135, "val_adv_acc": null, "test_adv_acc": null, "secs": 3.8}
+  {"epoch": 5, "loss": 0.32645842333568864, "val_acc": 70.22862823061631, "test_acc": 70.63063063063063, "val_adv_acc": null, "test_adv_acc": null, "secs": 3.8}
+  {"epoch": 6, "loss": 0.23281048038476135, "val_acc": 67.44532803180914, "test_acc": 70.04504504504504, "val_adv_acc": null, "test_adv_acc": null, "secs": 4.4}
+  {"epoch": 7, "loss": 0.16028152610460653, "val_acc": 70.02982107355865, "test_acc": 70.31531531531532, "val_adv_acc": null, "test_adv_acc": null, "secs": 4.1}
+  {"epoch": 8, "loss": 0.12317944640675957, "val_acc": 68.88667992047714, "test_acc": 69.90990990990991, "val_adv_acc": null, "test_adv_acc": null, "secs": 3.7}
+  {"epoch": 9, "loss": 0.10084216581865929, "val_acc": 70.07952286282305, "test_acc": 71.44144144144144, "val_adv_acc": null, "test_adv_acc": null, "secs": 4.0}
+  {"epoch": 10, "loss": 0.08756796445356606, "val_acc": 68.83697813121272, "test_acc": 70.0, "val_adv_acc": null, "test_adv_acc": null, "secs": 4.5}
+  {"epoch": 11, "loss": 0.08132690413682103, "val_acc": 69.4831013916501, "test_acc": 69.86486486486487, "val_adv_acc": null, "test_adv_acc": null, "secs": 3.8}
+  {"epoch": 12, "loss": 0.06067767942096281, "val_acc": 69.13518886679921, "test_acc": 70.990990990991, "val_adv_acc": null, "test_adv_acc": null, "secs": 3.8}
+  {"epoch": 13, "loss": 0.055555786688192894, "val_acc": 68.78727634194831, "test_acc": 70.85585585585585, "val_adv_acc": null, "test_adv_acc": null, "secs": 4.8}
+  {"epoch": 14, "loss": 0.04532944425907612, "val_acc": 68.63817097415507, "test_acc": 70.54054054054055, "val_adv_acc": null, "test_adv_acc": null, "secs": 3.8}
+  {"epoch": 15, "loss": 0.034127909867464216, "val_acc": 68.63817097415507, "test_acc": 70.36036036036036, "val_adv_acc": null, "test_adv_acc": null, "secs": 3.8}
+  {"epoch": 16, "loss": 0.022776407286727307, "val_acc": 68.48906560636183, "test_acc": 70.90090090090091, "val_adv_acc": null, "test_adv_acc": null, "secs": 4.5}
+  {"epoch": 17, "loss": 0.01880621478886715, "val_acc": 68.83697813121272, "test_acc": 70.990990990991, "val_adv_acc": null, "test_adv_acc": null, "secs": 4.2}
+  {"epoch": 18, "loss": 0.012320886288327244, "val_acc": 68.88667992047714, "test_acc": 71.17117117117117, "val_adv_acc": null, "test_adv_acc": null, "secs": 3.9}
+  {"epoch": 19, "loss": 0.00820090589067658, "val_acc": 68.29025844930418, "test_acc": 70.72072072072072, "val_adv_acc": null, "test_adv_acc": null, "secs": 4.0}
+  {"epoch": 20, "loss": 0.009478625508272462, "val_acc": 69.0854870775348, "test_acc": 70.63063063063063, "val_adv_acc": null, "test_adv_acc": null, "secs": 4.6}
+== E3: post-hoc attacker on the sentiment-only encoder (leakage, no defence)
+  attacker epoch 1: val 53.88  test 55.59
+  attacker epoch 10: val 51.34  test 52.34
+  attacker epoch 20: val 53.78  test 54.46
+  attacker epoch 30: val 55.32  test 56.49
+  attacker epoch 40: val 54.08  test 55.77
+  attacker epoch 50: val 55.52  test 55.45
+  attacker epoch 60: val 53.23  test 52.12
+  attacker epoch 70: val 54.13  test 54.32
+  attacker epoch 80: val 55.67  test 55.14
+  attacker epoch 90: val 55.96  test 53.78
+  attacker epoch 100: val 51.09  test 55.23
+  attacker epoch 1: val 53.18  test 54.73
+  attacker epoch 10: val 53.13  test 51.58
+  attacker epoch 20: val 53.28  test 53.29
+  attacker epoch 30: val 55.47  test 56.76
+  attacker epoch 40: val 54.72  test 55.50
+  attacker epoch 50: val 56.16  test 56.44
+  attacker epoch 60: val 54.08  test 54.28
+  attacker epoch 70: val 56.01  test 55.95
+  attacker epoch 80: val 53.68  test 54.82
+  attacker epoch 90: val 55.86  test 55.86
+  attacker epoch 100: val 53.98  test 54.73
+== E4: adversarial training, lambda = 1
+[train] target=y lambda=1.0 epochs=20 train=18,108 val=2,012 test=2,220 vocab=30,438 device=cuda
+  {"epoch": 1, "loss": 1.3025804816267732, "val_acc": 78.6779324055666, "test_acc": 77.74774774774775, "val_adv_acc": 54.52286282306163, "test_adv_acc": 53.55855855855856, "secs": 4.6}
+  {"epoch": 2, "loss": 1.1227014532988766, "val_acc": 83.15109343936382, "test_acc": 83.28828828828829, "val_adv_acc": 52.584493041749504, "test_adv_acc": 51.98198198198198, "secs": 5.0}
+  {"epoch": 3, "loss": 0.9928243850697896, "val_acc": 86.3817097415507, "test_acc": 85.76576576576576, "val_adv_acc": 50.99403578528827, "test_adv_acc": 51.8018018018018, "secs": 4.3}
+  {"epoch": 4, "loss": 0.9076475373477316, "val_acc": 86.28230616302187, "test_acc": 85.990990990991, "val_adv_acc": 52.335984095427435, "test_adv_acc": 50.990990990990994, "secs": 4.8}
+  {"epoch": 5, "loss": 0.8453878866591304, "val_acc": 87.57455268389663, "test_acc": 86.30630630630631, "val_adv_acc": 49.50298210735586, "test_adv_acc": 50.85585585585586, "secs": 4.7}
+  {"epoch": 6, "loss": 0.8033815567820494, "val_acc": 86.72962226640159, "test_acc": 85.13513513513513, "val_adv_acc": 52.335984095427435, "test_adv_acc": 52.207207207207205, "secs": 4.2}
+  {"epoch": 7, "loss": 0.7781914599768132, "val_acc": 87.67395626242545, "test_acc": 86.8018018018018, "val_adv_acc": 53.47912524850894, "test_adv_acc": 52.072072072072075, "secs": 4.9}
+  {"epoch": 8, "loss": 0.7627554386426261, "val_acc": 86.87872763419483, "test_acc": 86.30630630630631, "val_adv_acc": 54.02584493041749, "test_adv_acc": 53.73873873873874, "secs": 4.7}
+  {"epoch": 9, "loss": 0.7697014346248087, "val_acc": 86.33200795228628, "test_acc": 85.54054054054055, "val_adv_acc": 51.590457256461235, "test_adv_acc": 51.306306306306304, "secs": 4.2}
+  {"epoch": 10, "loss": 0.7657203656409997, "val_acc": 86.92842942345925, "test_acc": 86.48648648648648, "val_adv_acc": 52.584493041749504, "test_adv_acc": 51.75675675675676, "secs": 4.9}
+  {"epoch": 11, "loss": 0.7630075261322689, "val_acc": 86.63021868787277, "test_acc": 86.44144144144144, "val_adv_acc": 49.2544731610338, "test_adv_acc": 49.414414414414416, "secs": 4.6}
+  {"epoch": 12, "loss": 0.7705551347170072, "val_acc": 86.92842942345925, "test_acc": 86.21621621621621, "val_adv_acc": 50.79522862823062, "test_adv_acc": 50.9009009009009, "secs": 4.2}
+  {"epoch": 13, "loss": 0.7829375080591484, "val_acc": 87.22664015904573, "test_acc": 86.3963963963964, "val_adv_acc": 51.192842942345926, "test_adv_acc": 51.306306306306304, "secs": 4.9}
+  {"epoch": 14, "loss": 0.7881869239630171, "val_acc": 87.77335984095427, "test_acc": 85.76576576576576, "val_adv_acc": 53.08151093439364, "test_adv_acc": 51.711711711711715, "secs": 4.6}
+  {"epoch": 15, "loss": 0.7785273374562129, "val_acc": 88.12127236580517, "test_acc": 86.66666666666667, "val_adv_acc": 50.19880715705765, "test_adv_acc": 50.31531531531532, "secs": 4.3}
+  {"epoch": 16, "loss": 0.7893829765977095, "val_acc": 87.42544731610337, "test_acc": 85.76576576576576, "val_adv_acc": 49.90059642147117, "test_adv_acc": 51.126126126126124, "secs": 5.1}
+  {"epoch": 17, "loss": 0.7909085059076423, "val_acc": 86.63021868787277, "test_acc": 84.45945945945945, "val_adv_acc": 49.30417495029821, "test_adv_acc": 51.306306306306304, "secs": 4.5}
+  {"epoch": 18, "loss": 0.7971418801853929, "val_acc": 87.37574552683897, "test_acc": 85.67567567567568, "val_adv_acc": 52.485089463220675, "test_adv_acc": 53.24324324324324, "secs": 4.3}
+  {"epoch": 19, "loss": 0.7860032175981316, "val_acc": 87.62425447316103, "test_acc": 86.17117117117117, "val_adv_acc": 49.90059642147117, "test_adv_acc": 49.95495495495496, "secs": 4.9}
+  {"epoch": 20, "loss": 0.7880279346362418, "val_acc": 87.8727634194831, "test_acc": 85.4054054054054, "val_adv_acc": 50.09940357852883, "test_adv_acc": 50.36036036036036, "secs": 4.5}
+  attacker epoch 1: val 51.99  test 51.76
+  attacker epoch 10: val 54.57  test 55.45
+  attacker epoch 20: val 54.82  test 53.83
+  attacker epoch 30: val 53.98  test 53.15
+  attacker epoch 40: val 56.16  test 54.91
+  attacker epoch 50: val 56.01  test 56.17
+  attacker epoch 60: val 56.01  test 56.40
+  attacker epoch 70: val 52.68  test 52.16
+  attacker epoch 80: val 55.96  test 54.41
+  attacker epoch 90: val 52.78  test 52.70
+  attacker epoch 100: val 54.27  test 55.18
+  attacker epoch 1: val 49.85  test 49.55
+  attacker epoch 10: val 55.07  test 52.03
+  attacker epoch 20: val 54.57  test 52.16
+  attacker epoch 30: val 55.27  test 55.50
+  attacker epoch 40: val 50.25  test 50.54
+  attacker epoch 50: val 53.88  test 55.09
+  attacker epoch 60: val 51.79  test 52.34
+  attacker epoch 70: val 54.22  test 53.47
+  attacker epoch 80: val 50.60  test 51.13
+  attacker epoch 90: val 55.32  test 53.56
+  attacker epoch 100: val 55.22  test 55.00
+
+Results (data/reddit/processed/masked, 20 encoder epochs, 100 attacker epochs; chance = 50.0)
+
+| Measurement | Paper | Ours, paper protocol | Ours, held-out selection |
+|---|---|---|---|
+| Sentiment, encoder trained alone (acc) | - | 87.8 | 86.1 |
+| Variety (NG vs US), encoder trained alone (acc) | - | 71.4 | 70.6 |
+| Leakage: attacker on sentiment encoder | - | 57.5 | 56.6 |
+| Adversarial (lambda=1): sentiment acc | - | 86.8 | 86.7 |
+| Adversarial (lambda=1): online adversary acc | - | 52.1 | 50.3 |
+| Adversarial (lambda=1): post-hoc attacker (leakage) | - | 57.0 | 54.1 |
+| Adversarial (lambda=1): delta = attacker - adversary | - | 4.9 | 3.8 |
+
+Paper protocol: best epoch chosen on the test set, as in the original code.
+Held-out selection: epoch chosen on a separate validation set, then scored on test.
+

@@ -1,0 +1,50 @@
+{
+  "data": "data/reddit/processed/masked",
+  "epochs": 20,
+  "attacker_epochs": 100,
+  "attribute": "variety (NG vs US)",
+  "paper": null,
+  "E1_sentiment_only": {
+    "test": {
+      "epoch": 20,
+      "test_acc": 87.7927927927928,
+      "test_adv_acc": null
+    },
+    "val": {
+      "epoch": 8,
+      "test_acc": 86.12612612612612,
+      "test_adv_acc": null
+    }
+  },
+  "E2_race_only": {
+    "test": {
+      "epoch": 9,
+      "test_acc": 71.44144144144144,
+      "test_adv_acc": null
+    },
+    "val": {
+      "epoch": 5,
+      "test_acc": 70.63063063063063,
+      "test_adv_acc": null
+    }
+  },
+  "E3_leakage_no_adversary": {
+    "paper_protocol": 57.47748017311096,
+    "heldout": 56.57657980918884
+  },
+  "E4_adv_lambda1": {
+    "paper_protocol": {
+      "task_acc": 86.8018018018018,
+      "adversary_acc": 52.072072072072075,
+      "leakage": 56.98198080062866,
+      "delta": 4.909908728556587
+    },
+    "heldout": {
+      "task_acc": 86.66666666666667,
+      "adversary_acc": 50.31531531531532,
+      "leakage": 54.14414405822754,
+      "delta": 3.828828742912222
+    }
+  },
+  "minutes": 10.4
+}

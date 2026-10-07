@@ -24,6 +24,7 @@ demographic attribute well above chance.
 | `scripts/run_original.sh` | runs the authors' original Python 2.7 / DyNet code on the faithful data (see below) |
 | `scripts/finish_reddit.sh` | after collection: common end date, cleaning, labels, annotation sheet, summary, zip for Colab |
 | `src/report_reddit.py` | summary of the Reddit dataset and the annotation scores (`results/reddit_data.md`) |
+| `src/summarise_results.py` | every result in one table with 95% confidence intervals (`results/summary.md`) |
 | `scripts/colab_run.py` | every training run on a Colab GPU, results saved to Google Drive, resumable |
 | `scripts/smoke_test.sh` | runs everything on mock data in about 5 minutes |
 

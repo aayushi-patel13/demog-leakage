@@ -1,0 +1,73 @@
+{
+  "data": "data/processed/sent_race",
+  "lambda": 1.0,
+  "attacker_epochs": 100,
+  "rows": [
+    {
+      "run": "seed 16 (main run)",
+      "epochs": "20 (best on val)",
+      "task_acc": 70.93,
+      "adversary_acc": 51.17,
+      "leakage": 64.98000025749207,
+      "seed_run": true
+    },
+    {
+      "run": "seed 17",
+      "epochs": "20 (best on val: 4)",
+      "task_acc": 70.76,
+      "adversary_acc": 50.4,
+      "leakage": 62.909996509552,
+      "seed_run": true
+    },
+    {
+      "run": "seed 18",
+      "epochs": "20 (best on val: 5)",
+      "task_acc": 70.3,
+      "adversary_acc": 54.53,
+      "leakage": 64.0500009059906,
+      "seed_run": true
+    },
+    {
+      "run": "long run, seed 16",
+      "epochs": "after 20",
+      "task_acc": 69.0,
+      "adversary_acc": 51.92,
+      "leakage": 63.81999850273132,
+      "seed_run": false
+    },
+    {
+      "run": "long run, seed 16",
+      "epochs": "after 40",
+      "task_acc": 67.96,
+      "adversary_acc": 52.17,
+      "leakage": 62.65999674797058,
+      "seed_run": false
+    },
+    {
+      "run": "long run, seed 16",
+      "epochs": "after 60",
+      "task_acc": 67.51,
+      "adversary_acc": 51.61,
+      "leakage": 61.97999715805054,
+      "seed_run": false
+    }
+  ],
+  "seed_summary": {
+    "task_acc": {
+      "mean": 70.66,
+      "sd": 0.33,
+      "n": 3
+    },
+    "adversary_acc": {
+      "mean": 52.03,
+      "sd": 2.2,
+      "n": 3
+    },
+    "leakage": {
+      "mean": 63.98,
+      "sd": 1.04,
+      "n": 3
+    }
+  },
+  "minutes": 83.5
+}

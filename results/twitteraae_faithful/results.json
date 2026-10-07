@@ -1,0 +1,57 @@
+{
+  "data": "data/processed/sent_race_faithful",
+  "epochs": 20,
+  "attacker_epochs": 100,
+  "attribute": "race",
+  "paper": {
+    "sentiment_only_acc": 67.4,
+    "race_only_acc": 83.9,
+    "leakage_no_adversary": 64.5,
+    "adv_task_acc": 64.7,
+    "adv_leakage": 56.0,
+    "adv_delta": 5.0
+  },
+  "E1_sentiment_only": {
+    "test": {
+      "epoch": 7,
+      "test_acc": 72.11,
+      "test_adv_acc": null
+    },
+    "val": {
+      "epoch": 6,
+      "test_acc": 71.62,
+      "test_adv_acc": null
+    }
+  },
+  "E2_race_only": {
+    "test": {
+      "epoch": 17,
+      "test_acc": 89.2,
+      "test_adv_acc": null
+    },
+    "val": {
+      "epoch": 6,
+      "test_acc": 88.76,
+      "test_adv_acc": null
+    }
+  },
+  "E3_leakage_no_adversary": {
+    "paper_protocol": 71.16000056266785,
+    "heldout": 70.78999876976013
+  },
+  "E4_adv_lambda1": {
+    "paper_protocol": {
+      "task_acc": 71.37,
+      "adversary_acc": 52.85,
+      "leakage": 70.42999863624573,
+      "delta": 17.579998636245726
+    },
+    "heldout": {
+      "task_acc": 71.37,
+      "adversary_acc": 52.85,
+      "leakage": 70.23999691009521,
+      "delta": 17.389996910095213
+    }
+  },
+  "minutes": 89.5
+}

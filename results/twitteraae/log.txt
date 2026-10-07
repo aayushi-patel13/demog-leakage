@@ -1,0 +1,127 @@
+== E1: encoder trained on sentiment only
+[train] target=y lambda=0.0 epochs=20 train=104,432 val=10,000 test=10,000 vocab=60,230 device=cuda
+  {"epoch": 1, "loss": 0.6243233146228413, "val_acc": 69.27, "test_acc": 69.46, "val_adv_acc": null, "test_adv_acc": null, "secs": 23.4}
+  {"epoch": 2, "loss": 0.5656468423298312, "val_acc": 68.81, "test_acc": 68.48, "val_adv_acc": null, "test_adv_acc": null, "secs": 20.8}
+  {"epoch": 3, "loss": 0.5205769805351516, "val_acc": 68.9, "test_acc": 69.38, "val_adv_acc": null, "test_adv_acc": null, "secs": 21.5}
+  {"epoch": 4, "loss": 0.4688044180818186, "val_acc": 70.6, "test_acc": 70.67, "val_adv_acc": null, "test_adv_acc": null, "secs": 20.4}
+  {"epoch": 5, "loss": 0.4065234315021856, "val_acc": 70.62, "test_acc": 70.22, "val_adv_acc": null, "test_adv_acc": null, "secs": 21.5}
+  {"epoch": 6, "loss": 0.33846774278144404, "val_acc": 69.92, "test_acc": 69.88, "val_adv_acc": null, "test_adv_acc": null, "secs": 20.4}
+  {"epoch": 7, "loss": 0.2715357645206874, "val_acc": 70.41, "test_acc": 70.25, "val_adv_acc": null, "test_adv_acc": null, "secs": 21.4}
+  {"epoch": 8, "loss": 0.2166150281517118, "val_acc": 68.95, "test_acc": 69.33, "val_adv_acc": null, "test_adv_acc": null, "secs": 20.9}
+  {"epoch": 9, "loss": 0.17488612383187402, "val_acc": 68.0, "test_acc": 68.73, "val_adv_acc": null, "test_adv_acc": null, "secs": 21.0}
+  {"epoch": 10, "loss": 0.14375301038201996, "val_acc": 68.35, "test_acc": 69.27, "val_adv_acc": null, "test_adv_acc": null, "secs": 21.5}
+  {"epoch": 11, "loss": 0.12582708796322095, "val_acc": 68.38, "test_acc": 68.96, "val_adv_acc": null, "test_adv_acc": null, "secs": 20.5}
+  {"epoch": 12, "loss": 0.1105420550205498, "val_acc": 68.39, "test_acc": 68.62, "val_adv_acc": null, "test_adv_acc": null, "secs": 21.3}
+  {"epoch": 13, "loss": 0.1006126346337179, "val_acc": 69.1, "test_acc": 69.18, "val_adv_acc": null, "test_adv_acc": null, "secs": 20.4}
+  {"epoch": 14, "loss": 0.09128890095645582, "val_acc": 69.29, "test_acc": 68.59, "val_adv_acc": null, "test_adv_acc": null, "secs": 21.3}
+  {"epoch": 15, "loss": 0.08378307520124255, "val_acc": 68.39, "test_acc": 68.68, "val_adv_acc": null, "test_adv_acc": null, "secs": 20.4}
+  {"epoch": 16, "loss": 0.0755807046587982, "val_acc": 68.56, "test_acc": 68.8, "val_adv_acc": null, "test_adv_acc": null, "secs": 21.6}
+  {"epoch": 17, "loss": 0.07058482772407101, "val_acc": 68.33, "test_acc": 68.91, "val_adv_acc": null, "test_adv_acc": null, "secs": 20.8}
+  {"epoch": 18, "loss": 0.0654525274206159, "val_acc": 68.46, "test_acc": 69.23, "val_adv_acc": null, "test_adv_acc": null, "secs": 21.2}
+  {"epoch": 19, "loss": 0.0595553179155508, "val_acc": 68.42, "test_acc": 69.36, "val_adv_acc": null, "test_adv_acc": null, "secs": 21.4}
+  {"epoch": 20, "loss": 0.05593360574706902, "val_acc": 68.53, "test_acc": 68.98, "val_adv_acc": null, "test_adv_acc": null, "secs": 22.4}
+== E2: encoder trained on race only
+[train] target=z lambda=0.0 epochs=20 train=104,432 val=10,000 test=10,000 vocab=60,230 device=cuda
+  {"epoch": 1, "loss": 0.4397977837536188, "val_acc": 82.06, "test_acc": 83.0, "val_adv_acc": null, "test_adv_acc": null, "secs": 22.5}
+  {"epoch": 2, "loss": 0.34120168216025387, "val_acc": 84.44, "test_acc": 84.54, "val_adv_acc": null, "test_adv_acc": null, "secs": 21.5}
+  {"epoch": 3, "loss": 0.28774907791187154, "val_acc": 84.25, "test_acc": 84.98, "val_adv_acc": null, "test_adv_acc": null, "secs": 21.9}
+  {"epoch": 4, "loss": 0.23917694631019376, "val_acc": 84.42, "test_acc": 85.42, "val_adv_acc": null, "test_adv_acc": null, "secs": 21.5}
+  {"epoch": 5, "loss": 0.19246516322084392, "val_acc": 84.37, "test_acc": 84.6, "val_adv_acc": null, "test_adv_acc": null, "secs": 20.5}
+  {"epoch": 6, "loss": 0.15419218513062438, "val_acc": 83.9, "test_acc": 84.63, "val_adv_acc": null, "test_adv_acc": null, "secs": 21.4}
+  {"epoch": 7, "loss": 0.12274381416110385, "val_acc": 83.62, "test_acc": 84.41, "val_adv_acc": null, "test_adv_acc": null, "secs": 20.6}
+  {"epoch": 8, "loss": 0.10167956819199651, "val_acc": 83.55, "test_acc": 84.17, "val_adv_acc": null, "test_adv_acc": null, "secs": 21.4}
+  {"epoch": 9, "loss": 0.08391156009532723, "val_acc": 83.96, "test_acc": 83.9, "val_adv_acc": null, "test_adv_acc": null, "secs": 20.7}
+  {"epoch": 10, "loss": 0.0714109453049342, "val_acc": 84.11, "test_acc": 83.46, "val_adv_acc": null, "test_adv_acc": null, "secs": 21.2}
+  {"epoch": 11, "loss": 0.060108027386181435, "val_acc": 83.89, "test_acc": 83.82, "val_adv_acc": null, "test_adv_acc": null, "secs": 21.0}
+  {"epoch": 12, "loss": 0.04952099554436665, "val_acc": 83.85, "test_acc": 83.76, "val_adv_acc": null, "test_adv_acc": null, "secs": 20.8}
+  {"epoch": 13, "loss": 0.04305993631001415, "val_acc": 83.51, "test_acc": 83.61, "val_adv_acc": null, "test_adv_acc": null, "secs": 20.8}
+  {"epoch": 14, "loss": 0.03393017023635918, "val_acc": 83.66, "test_acc": 83.86, "val_adv_acc": null, "test_adv_acc": null, "secs": 20.5}
+  {"epoch": 15, "loss": 0.027460025434623832, "val_acc": 83.58, "test_acc": 83.44, "val_adv_acc": null, "test_adv_acc": null, "secs": 21.2}
+  {"epoch": 16, "loss": 0.024002435872742745, "val_acc": 83.62, "test_acc": 83.65, "val_adv_acc": null, "test_adv_acc": null, "secs": 20.4}
+  {"epoch": 17, "loss": 0.019362234170717963, "val_acc": 83.62, "test_acc": 84.04, "val_adv_acc": null, "test_adv_acc": null, "secs": 21.2}
+  {"epoch": 18, "loss": 0.014389063093264078, "val_acc": 84.01, "test_acc": 84.2, "val_adv_acc": null, "test_adv_acc": null, "secs": 20.3}
+  {"epoch": 19, "loss": 0.009738923611756494, "val_acc": 83.79, "test_acc": 84.18, "val_adv_acc": null, "test_adv_acc": null, "secs": 21.0}
+  {"epoch": 20, "loss": 0.008990677817661689, "val_acc": 83.65, "test_acc": 83.98, "val_adv_acc": null, "test_adv_acc": null, "secs": 20.6}
+== E3: post-hoc attacker on the sentiment-only encoder (leakage, no defence)
+  attacker epoch 1: val 60.57  test 61.11
+  attacker epoch 10: val 62.24  test 63.27
+  attacker epoch 20: val 62.54  test 63.39
+  attacker epoch 30: val 63.21  test 63.63
+  attacker epoch 40: val 63.60  test 64.38
+  attacker epoch 50: val 60.56  test 60.60
+  attacker epoch 60: val 62.20  test 63.67
+  attacker epoch 70: val 63.63  test 63.89
+  attacker epoch 80: val 62.74  test 64.14
+  attacker epoch 90: val 63.83  test 63.34
+  attacker epoch 100: val 62.07  test 61.79
+  attacker epoch 1: val 59.58  test 60.73
+  attacker epoch 10: val 61.97  test 62.77
+  attacker epoch 20: val 62.08  test 62.46
+  attacker epoch 30: val 62.58  test 62.98
+  attacker epoch 40: val 63.12  test 63.59
+  attacker epoch 50: val 60.52  test 60.61
+  attacker epoch 60: val 61.59  test 62.13
+  attacker epoch 70: val 61.97  test 62.79
+  attacker epoch 80: val 63.15  test 64.02
+  attacker epoch 90: val 62.04  test 62.83
+  attacker epoch 100: val 62.83  test 64.00
+== E4: adversarial training, lambda = 1
+[train] target=y lambda=1.0 epochs=20 train=104,432 val=10,000 test=10,000 vocab=60,230 device=cuda
+  {"epoch": 1, "loss": 1.33337934524556, "val_acc": 68.9, "test_acc": 68.85, "val_adv_acc": 52.66, "test_adv_acc": 52.31, "secs": 24.0}
+  {"epoch": 2, "loss": 1.2891333863693921, "val_acc": 69.92, "test_acc": 70.22, "val_adv_acc": 53.21, "test_adv_acc": 52.73, "secs": 23.5}
+  {"epoch": 3, "loss": 1.255072322285557, "val_acc": 69.2, "test_acc": 69.37, "val_adv_acc": 52.31, "test_adv_acc": 51.62, "secs": 23.8}
+  {"epoch": 4, "loss": 1.2129893993114975, "val_acc": 70.11, "test_acc": 69.84, "val_adv_acc": 52.42, "test_adv_acc": 51.9, "secs": 23.8}
+  {"epoch": 5, "loss": 1.1571701972539745, "val_acc": 70.34, "test_acc": 70.93, "val_adv_acc": 51.47, "test_adv_acc": 51.17, "secs": 24.1}
+  {"epoch": 6, "loss": 1.0917164877031962, "val_acc": 69.42, "test_acc": 69.63, "val_adv_acc": 51.5, "test_adv_acc": 52.63, "secs": 24.0}
+  {"epoch": 7, "loss": 1.0193016856009296, "val_acc": 69.79, "test_acc": 70.21, "val_adv_acc": 53.01, "test_adv_acc": 52.88, "secs": 23.6}
+  {"epoch": 8, "loss": 0.9567838615565346, "val_acc": 69.41, "test_acc": 69.82, "val_adv_acc": 51.68, "test_adv_acc": 51.97, "secs": 23.6}
+  {"epoch": 9, "loss": 0.9036676966798822, "val_acc": 68.75, "test_acc": 68.64, "val_adv_acc": 52.68, "test_adv_acc": 52.32, "secs": 23.7}
+  {"epoch": 10, "loss": 0.8722662534322164, "val_acc": 68.62, "test_acc": 69.48, "val_adv_acc": 52.87, "test_adv_acc": 53.06, "secs": 24.1}
+  {"epoch": 11, "loss": 0.8570516087732363, "val_acc": 68.32, "test_acc": 68.78, "val_adv_acc": 51.59, "test_adv_acc": 50.76, "secs": 24.5}
+  {"epoch": 12, "loss": 0.8436956543350395, "val_acc": 68.33, "test_acc": 68.75, "val_adv_acc": 52.2, "test_adv_acc": 52.17, "secs": 24.8}
+  {"epoch": 13, "loss": 0.8367240927167156, "val_acc": 69.24, "test_acc": 69.02, "val_adv_acc": 52.49, "test_adv_acc": 52.28, "secs": 24.1}
+  {"epoch": 14, "loss": 0.8328503179791256, "val_acc": 68.39, "test_acc": 69.34, "val_adv_acc": 52.62, "test_adv_acc": 52.91, "secs": 24.6}
+  {"epoch": 15, "loss": 0.8302764021566784, "val_acc": 68.69, "test_acc": 68.42, "val_adv_acc": 51.65, "test_adv_acc": 51.14, "secs": 24.2}
+  {"epoch": 16, "loss": 0.8296926125772189, "val_acc": 68.11, "test_acc": 68.94, "val_adv_acc": 51.07, "test_adv_acc": 52.12, "secs": 24.1}
+  {"epoch": 17, "loss": 0.8313774664131335, "val_acc": 68.36, "test_acc": 68.56, "val_adv_acc": 51.39, "test_adv_acc": 51.52, "secs": 24.1}
+  {"epoch": 18, "loss": 0.8304176854195996, "val_acc": 67.91, "test_acc": 68.61, "val_adv_acc": 52.31, "test_adv_acc": 52.29, "secs": 23.4}
+  {"epoch": 19, "loss": 0.8334765292171025, "val_acc": 68.65, "test_acc": 68.92, "val_adv_acc": 51.5, "test_adv_acc": 51.02, "secs": 24.1}
+  {"epoch": 20, "loss": 0.834794432742135, "val_acc": 68.63, "test_acc": 69.0, "val_adv_acc": 51.67, "test_adv_acc": 51.92, "secs": 24.1}
+  attacker epoch 1: val 52.74  test 53.14
+  attacker epoch 10: val 59.59  test 60.23
+  attacker epoch 20: val 59.78  test 61.19
+  attacker epoch 30: val 60.29  test 61.37
+  attacker epoch 40: val 60.28  test 60.52
+  attacker epoch 50: val 60.75  test 61.85
+  attacker epoch 60: val 60.65  test 62.60
+  attacker epoch 70: val 61.10  test 62.01
+  attacker epoch 80: val 61.61  test 61.76
+  attacker epoch 90: val 61.09  test 61.97
+  attacker epoch 100: val 61.23  test 62.02
+  attacker epoch 1: val 52.74  test 53.14
+  attacker epoch 10: val 59.59  test 60.23
+  attacker epoch 20: val 59.78  test 61.19
+  attacker epoch 30: val 60.29  test 61.37
+  attacker epoch 40: val 60.28  test 60.52
+  attacker epoch 50: val 60.75  test 61.85
+  attacker epoch 60: val 60.65  test 62.60
+  attacker epoch 70: val 61.10  test 62.01
+  attacker epoch 80: val 61.61  test 61.76
+  attacker epoch 90: val 61.09  test 61.97
+  attacker epoch 100: val 61.23  test 62.02
+
+Results (data/processed/sent_race, 20 encoder epochs, 100 attacker epochs; chance = 50.0)
+
+| Measurement | Paper | Ours, paper protocol | Ours, held-out selection |
+|---|---|---|---|
+| Sentiment, encoder trained alone (acc) | 67.4 | 70.7 | 70.2 |
+| Race, encoder trained alone (acc) | 83.9 | 85.4 | 84.5 |
+| Leakage: attacker on sentiment encoder | 64.5 | 65.4 | 64.1 |
+| Adversarial (lambda=1): sentiment acc | 64.7 | 70.9 | 70.9 |
+| Adversarial (lambda=1): online adversary acc | - | 51.2 | 51.2 |
+| Adversarial (lambda=1): post-hoc attacker (leakage) | 56.0 | 65.0 | 65.0 |
+| Adversarial (lambda=1): delta = attacker - adversary | 5.0 | 13.8 | 13.8 |
+
+Paper protocol: best epoch chosen on the test set, as in the original code.
+Held-out selection: epoch chosen on a separate validation set, then scored on test.
+
