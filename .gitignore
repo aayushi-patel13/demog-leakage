@@ -11,3 +11,6 @@ __pycache__/
 data/processed/*/*.txt
 !data/processed/*/data_report.json
 *.log
+*.zip
+notebooks/
+nohup.out

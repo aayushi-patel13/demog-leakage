@@ -15,7 +15,7 @@
     },
     "neg_aa": {
       "emoji_tweets_in_population": 38739,
-      "written": 31760
+      "written": 31108
     },
     "neg_wh": {
       "emoji_tweets_in_population": 733037,
@@ -39,21 +39,25 @@
     "sad_only_aa": 38739,
     "sad_only_wh": 733037,
     "sample_dropped_duplicate_neg_aa": 3277,
-    "sample_dropped_duplicate_neg_wh": 2740,
-    "sample_dropped_duplicate_pos_aa": 3525,
-    "sample_dropped_duplicate_pos_wh": 1255,
+    "sample_dropped_duplicate_neg_wh": 5420,
+    "sample_dropped_duplicate_pos_aa": 4423,
+    "sample_dropped_duplicate_pos_wh": 2486,
+    "sample_dropped_same_after_normalising_neg_aa": 652,
+    "sample_dropped_same_after_normalising_neg_wh": 1680,
+    "sample_dropped_same_after_normalising_pos_aa": 1293,
+    "sample_dropped_same_after_normalising_pos_wh": 2278,
     "sample_dropped_short_neg_aa": 3702,
-    "sample_dropped_short_neg_wh": 2497,
-    "sample_dropped_short_pos_aa": 7539,
-    "sample_dropped_short_pos_wh": 3282,
-    "seconds_scanning": 426
+    "sample_dropped_short_neg_wh": 4903,
+    "sample_dropped_short_pos_aa": 9439,
+    "sample_dropped_short_pos_wh": 6458,
+    "seconds_scanning": 464
   },
-  "test_sentences_also_in_train": 216,
+  "test_sentences_also_in_train": 0,
   "mean_tokens": {
-    "pos_aa": 10.34,
-    "pos_wh": 10.83,
-    "neg_aa": 10.17,
-    "neg_wh": 11.31
+    "pos_aa": 10.49,
+    "pos_wh": 11.18,
+    "neg_aa": 10.3,
+    "neg_wh": 11.58
   },
   "emoji_counts_highconf": {
     "aa": {
@@ -162,5 +166,5 @@
       ")=": 29
     }
   },
-  "seconds": 442.1
+  "seconds": 489.2
 }
