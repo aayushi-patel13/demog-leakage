@@ -1,17 +1,16 @@
 #!/usr/bin/env bash
 # Download the PAN 2017 author profiling training set (Rangel et al., 2017) from Zenodo.
+# (No "cmd | head" pipes here: under pipefail, head closing the pipe early counts as a failure.)
 set -euo pipefail
 DEST="data/raw/pan17"
 mkdir -p "$DEST"
 cd "$DEST"
 URL="https://zenodo.org/records/3745980/files/pan17-author-profiling-training-dataset-2017-03-10.zip?download=1"
-wget -c "$URL" -O pan17-training.zip
-unzip -o pan17-training.zip >/dev/null
-# the English part may be nested one level down; find it
-EN=$(find . -type d -name en | head -1)
+if [ ! -s pan17-training.zip ]; then
+  wget -c "$URL" -O pan17-training.zip
+fi
+unzip -oq pan17-training.zip
+EN=$(find . -type d -name en -print -quit)
 echo "English folder: $EN"
-ls "$EN" | head -5
-echo "authors: $(ls "$EN"/*.xml 2>/dev/null | wc -l)"
-head -3 "$EN/truth.txt" || true
-echo
-echo "Next: python src/prepare_pan17.py data/raw/pan17/${EN#./} data/processed/pan17_gb_us"
+echo "authors: $(find "$EN" -name '*.xml' | wc -l)"
+sed -n 1,3p "$EN/truth.txt"

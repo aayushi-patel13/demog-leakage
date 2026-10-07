@@ -1,0 +1,43 @@
+{
+  "authors_in_truth": 3600,
+  "by_value": {
+    "new zealand": 600,
+    "canada": 600,
+    "great britain": 600,
+    "australia": 600,
+    "united states": 600,
+    "ireland": 600
+  },
+  "tweets_read": 120000,
+  "looks_like_ids_only": 0,
+  "emoji_tweets": {
+    "pos_z1": 4255,
+    "neg_z1": 1572,
+    "pos_z0": 1287,
+    "neg_z0": 558
+  },
+  "conflicting_emojis": 224,
+  "retweets_skipped": 81,
+  "dropped_same_after_normalising": 73,
+  "attribute": "variety",
+  "z1": "great britain",
+  "z0": "united states",
+  "quadrants": {
+    "pos_z0": {
+      "train": 494,
+      "test": 64
+    },
+    "pos_z1": {
+      "train": 494,
+      "test": 64
+    },
+    "neg_z0": {
+      "train": 494,
+      "test": 64
+    },
+    "neg_z1": {
+      "train": 494,
+      "test": 64
+    }
+  }
+}
