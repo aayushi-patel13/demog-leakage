@@ -3,6 +3,9 @@
 Input : data/reddit/raw/*.jsonl  (from collect_reddit.py)
 Output: data/reddit/clean/comments.jsonl and data/reddit/clean/clean_report.json
 
+With --until YYYY-MM-DD, comments from that date on are left out, so that both
+groups cover the same period if one group's collection stopped early.
+
 Steps (each counted in the report):
   1. drop deleted/removed comments and bot accounts (AutoModerator, *bot)
   2. strip quoted lines ("> ..."), Markdown, links; map u/user and r/sub to
@@ -27,6 +30,7 @@ import random
 import re
 import sys
 from collections import Counter, defaultdict
+from datetime import datetime, timezone
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from textutils import HAPPY, SAD, emoji_hits, normalize_text  # noqa: E402
@@ -99,11 +103,20 @@ def main():
     ap.add_argument("--raw", default="data/reddit/raw")
     ap.add_argument("--out", default="data/reddit/clean")
     ap.add_argument("--salt", default="comp8240", help="salt for author hashing")
+    ap.add_argument("--until", default=None,
+                    help="keep comments created before this date (YYYY-MM-DD), so both groups cover "
+                         "the same period when one collection stopped early")
     args = ap.parse_args()
+    until = None
+    if args.until:
+        until = int(datetime.strptime(args.until, "%Y-%m-%d").replace(tzinfo=timezone.utc).timestamp())
     os.makedirs(args.out, exist_ok=True)
-    rep = {"raw_per_subreddit": Counter(), "dropped": Counter()}
+    rep = {"until": args.until, "raw_per_subreddit": Counter(), "dropped": Counter()}
+    span = {}   # first and last comment per subreddit, as collected
     rows = []
     for fn in sorted(glob.glob(os.path.join(args.raw, "*.jsonl"))):
+        if os.path.basename(fn) == "skipped_windows.jsonl":   # collector's gap log, not comments
+            continue
         with open(fn, encoding="utf-8") as fh:
             for ln in fh:
                 try:
@@ -111,7 +124,17 @@ def main():
                 except json.JSONDecodeError:
                     rep["dropped"]["bad_json"] += 1
                     continue
-                rep["raw_per_subreddit"][f"{c['group']}/{c['subreddit']}"] += 1
+                if "group" not in c or "id" not in c:
+                    rep["dropped"]["not_a_comment"] += 1
+                    continue
+                key = f"{c['group']}/{c['subreddit']}"
+                rep["raw_per_subreddit"][key] += 1
+                t = int(c["created_utc"])
+                lo, hi = span.get(key, (t, t))
+                span[key] = (min(lo, t), max(hi, t))
+                if until and t >= until:
+                    rep["dropped"]["after_until_date"] += 1
+                    continue
                 body = c.get("body") or ""
                 if body.strip() in ("[deleted]", "[removed]", ""):
                     rep["dropped"]["deleted_or_removed"] += 1
@@ -157,6 +180,8 @@ def main():
     stats = defaultdict(Counter)
     ntok = defaultdict(list)
     authors = defaultdict(set)
+    per_month = defaultdict(Counter)   # comments kept, by group and month
+    per_sub = Counter()
     with open(os.path.join(args.out, "comments.jsonl"), "w", encoding="utf-8") as out:
         for r in sorted(rows, key=lambda r: r["created_utc"]):
             g = r["group"]
@@ -174,9 +199,16 @@ def main():
             stats[g]["topic_masked_tokens"] += sum(t == "_TOPIC_" for t in rec["tokens_masked"])
             ntok[g].append(len(r["tokens"]))
             authors[g].add(rec["author_hash"])
+            per_month[g][f"{datetime.fromtimestamp(r['created_utc'], timezone.utc):%Y-%m}"] += 1
+            per_sub[f"{g}/{r['subreddit']}"] += 1
     rep["final_per_group"] = {g: dict(s, authors=len(authors[g]),
                                       median_tokens=sorted(ntok[g])[len(ntok[g]) // 2] if ntok[g] else 0)
                               for g, s in stats.items()}
+    rep["collected_span"] = {k: [f"{datetime.fromtimestamp(a, timezone.utc):%Y-%m-%d}",
+                                 f"{datetime.fromtimestamp(b, timezone.utc):%Y-%m-%d}"]
+                             for k, (a, b) in sorted(span.items())}
+    rep["final_per_subreddit"] = dict(per_sub)
+    rep["final_per_month"] = {g: dict(sorted(c.items())) for g, c in per_month.items()}
     rep["raw_per_subreddit"] = dict(rep["raw_per_subreddit"])
     rep["dropped"] = dict(rep["dropped"])
     with open(os.path.join(args.out, "clean_report.json"), "w") as fh:

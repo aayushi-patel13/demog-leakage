@@ -146,6 +146,12 @@ python src/experiments.py run-all --data data/processed/pan17_gb_us --epochs 20 
   texts appeared under both labels. The clean data drops every such text.
 * **Gender/age branch not reproduced.** PAN16 ships tweet ids only and the
   Twitter API that rehydrated them is no longer free.
+* **Reddit collection cut short.** From 7 October 2026 the archive throttled
+  most requests ("Timeout. Maybe slow down a bit"), slowing collection to a
+  crawl. r/philadelphia was not collected, a few one-hour windows were
+  skipped (listed in the collection logs), and r/Nigeria stopped partway
+  through the window. Cleaning is run with `--until` set to the day the
+  Nigerian collection reached, so both groups cover the same months.
 * **Reddit access.** The proposal planned the official Reddit API; self-service
   keys were withdrawn in late 2025, so comments come from the Arctic Shift
   public archive instead.
