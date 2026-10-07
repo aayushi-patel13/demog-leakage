@@ -1,0 +1,50 @@
+{
+  "data": "data/processed/pan17_gb_us",
+  "epochs": 20,
+  "attacker_epochs": 100,
+  "attribute": "variety (GB vs US)",
+  "paper": null,
+  "E1_sentiment_only": {
+    "test": {
+      "epoch": 19,
+      "test_acc": 81.53456998313659,
+      "test_adv_acc": null
+    },
+    "val": {
+      "epoch": 8,
+      "test_acc": 79.80607082630691,
+      "test_adv_acc": null
+    }
+  },
+  "E2_race_only": {
+    "test": {
+      "epoch": 7,
+      "test_acc": 61.29848229342327,
+      "test_adv_acc": null
+    },
+    "val": {
+      "epoch": 20,
+      "test_acc": 60.70826306913997,
+      "test_adv_acc": null
+    }
+  },
+  "E3_leakage_no_adversary": {
+    "paper_protocol": 56.11298680305481,
+    "heldout": 54.72175478935242
+  },
+  "E4_adv_lambda1": {
+    "paper_protocol": {
+      "task_acc": 80.77571669477234,
+      "adversary_acc": 48.229342327150086,
+      "leakage": 55.691397190093994,
+      "delta": 7.4620548629439085
+    },
+    "heldout": {
+      "task_acc": 79.51096121416526,
+      "adversary_acc": 50.843170320404724,
+      "leakage": 52.95109748840332,
+      "delta": 2.1079271679985965
+    }
+  },
+  "minutes": 23.3
+}
