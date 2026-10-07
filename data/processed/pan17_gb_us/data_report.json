@@ -17,27 +17,40 @@
     "neg_z0": 558
   },
   "conflicting_emojis": 224,
+  "vader_tweets": {
+    "neg_z1": 2892,
+    "pos_z1": 10199,
+    "pos_z0": 8401,
+    "neg_z0": 4830
+  },
   "retweets_skipped": 81,
-  "dropped_same_after_normalising": 73,
+  "dropped_same_after_normalising": 816,
+  "per_source": {
+    "train_emoji": 494,
+    "train_vader": 2333,
+    "test_emoji": 64,
+    "test_vader": 529
+  },
   "attribute": "variety",
+  "labels": "emoji+vader",
   "z1": "great britain",
   "z0": "united states",
   "quadrants": {
     "pos_z0": {
-      "train": 494,
-      "test": 64
+      "train": 2827,
+      "test": 593
     },
     "pos_z1": {
-      "train": 494,
-      "test": 64
+      "train": 2827,
+      "test": 593
     },
     "neg_z0": {
-      "train": 494,
-      "test": 64
+      "train": 2827,
+      "test": 593
     },
     "neg_z1": {
-      "train": 494,
-      "test": 64
+      "train": 2827,
+      "test": 593
     }
   }
 }

@@ -5,7 +5,12 @@ language variety (Australia, Canada, Great Britain, Ireland, New Zealand,
 United States). Variety is the closest existing analogue to the dialect
 attribute in the original paper, so we use it as the protected attribute:
 by default z = 1 for Great Britain and z = 0 for the United States. The main
-task is the same emoji-based sentiment as for TwitterAAE.
+task is sentiment: emoji labels as for TwitterAAE, plus (default) tweets with a
+strongly positive or negative VADER score, because emoji tweets alone leave too
+few US sad tweets. As for Reddit, every quadrant then gets the same number of
+emoji- and VADER-labelled tweets (British authors use these emojis about three
+times as often as US authors, so without the match the label source would
+differ by variety). --labels emoji keeps the emoji labels only.
 
 Expected layout after unzipping the training set:
   <dir>/en/<author_id>.xml   one file per author, tweets in <document> elements
@@ -64,14 +69,20 @@ def main():
     ap.add_argument("--attribute", choices=["variety", "gender"], default="variety")
     ap.add_argument("--z1", default="great britain", help="value mapped to z = 1")
     ap.add_argument("--z0", default="united states", help="value mapped to z = 0")
+    ap.add_argument("--labels", choices=["emoji", "emoji+vader"], default="emoji+vader")
+    ap.add_argument("--vader-threshold", type=float, default=0.6)
     args = ap.parse_args()
     if args.attribute == "gender" and args.z1 == "great britain":
         args.z1, args.z0 = "female", "male"
 
+    vader = None
+    if args.labels == "emoji+vader":
+        from label_reddit import vader_labeller
+        vader = vader_labeller()
     truth = read_truth(args.input)
     rep = {"authors_in_truth": len(truth), "by_value": Counter(), "tweets_read": 0,
            "looks_like_ids_only": 0, "emoji_tweets": Counter(), "conflicting_emojis": 0}
-    pools = defaultdict(list)  # (sent, z, split)
+    pools = defaultdict(list)  # (sent, z, split, source)
     for path in sorted(glob.glob(os.path.join(args.input, "*.xml"))):
         aid = os.path.splitext(os.path.basename(path))[0]
         if aid not in truth:
@@ -91,17 +102,24 @@ def main():
                 rep["retweets_skipped"] = rep.get("retweets_skipped", 0) + 1
                 continue
             h, s = emoji_hits(tw, HAPPY), emoji_hits(tw, SAD)
-            if not h and not s:
-                continue
             if h and s:
                 rep["conflicting_emojis"] += 1
                 continue
             toks = normalize_text(tw)
             if len(toks) < 3:
                 continue
-            sent = "pos" if h else "neg"
-            pools[(sent, z, split)].append(toks)
-            rep["emoji_tweets"][f"{sent}_z{z}"] += 1
+            if h or s:
+                sent, src = ("pos" if h else "neg"), "emoji"
+                rep["emoji_tweets"][f"{sent}_z{z}"] += 1
+            elif vader:
+                sent, src = vader(toks, args.vader_threshold), "vader"
+                if sent is None:
+                    continue
+                rep["vader_tweets"] = rep.get("vader_tweets", Counter())
+                rep["vader_tweets"][f"{sent}_z{z}"] += 1
+            else:
+                continue
+            pools[(sent, z, split, src)].append(toks)
     if rep["tweets_read"] and rep["looks_like_ids_only"] > 0.5 * rep["tweets_read"]:
         print("WARNING: most documents are tweet ids, not text. PAN17 would then need the Twitter API,"
               " like PAN16, and cannot be used without it.")
@@ -113,24 +131,31 @@ def main():
         rep["dropped_same_after_normalising"] = rep.get("dropped_same_after_normalising", 0) + before - len(pools[key])
     rng = random.Random(SEED)
     os.makedirs(args.output, exist_ok=True)
-    split_counts = {}
+    split_counts, sources = {}, ("emoji", "vader") if vader else ("emoji",)
+    chosen = defaultdict(list)  # (sent, z, split) -> rows, balanced per source
     for split in ("train", "test"):
-        k = min(len(pools[(s, z, split)]) for s in ("pos", "neg") for z in (0, 1))
-        for s in ("pos", "neg"):
-            for z in (0, 1):
-                rng.shuffle(pools[(s, z, split)])
-                pools[(s, z, split)] = pools[(s, z, split)][:k]
+        for src in sources:
+            k = min(len(pools[(s, z, split, src)]) for s in ("pos", "neg") for z in (0, 1))
+            rep.setdefault("per_source", {})[f"{split}_{src}"] = k
+            for s in ("pos", "neg"):
+                for z in (0, 1):
+                    rows = pools[(s, z, split, src)]
+                    rng.shuffle(rows)
+                    chosen[(s, z, split)] += rows[:k]
     for s in ("pos", "neg"):
         for z in (0, 1):
             name = f"{s}_z{z}"
-            tr, te = pools[(s, z, "train")], pools[(s, z, "test")]
+            tr, te = chosen[(s, z, "train")], chosen[(s, z, "test")]
+            rng.shuffle(tr)
             with open(os.path.join(args.output, name + ".txt"), "w", encoding="utf-8") as fh:
                 for toks in tr + te:
                     fh.write(" ".join(toks) + "\n")
             split_counts[name] = {"train": len(tr), "test": len(te)}
     json.dump(split_counts, open(os.path.join(args.output, "split.json"), "w"), indent=2)
-    rep.update({"attribute": args.attribute, "z1": args.z1, "z0": args.z0, "quadrants": split_counts,
-                "by_value": dict(rep["by_value"]), "emoji_tweets": dict(rep["emoji_tweets"])})
+    rep.update({"attribute": args.attribute, "labels": args.labels, "z1": args.z1, "z0": args.z0,
+                "quadrants": split_counts, "by_value": dict(rep["by_value"]),
+                "emoji_tweets": dict(rep["emoji_tweets"]),
+                "vader_tweets": dict(rep.get("vader_tweets", {}))})
     json.dump(rep, open(os.path.join(args.output, "data_report.json"), "w"), indent=2)
     print(json.dumps(rep, indent=2))
 

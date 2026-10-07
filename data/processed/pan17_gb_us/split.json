@@ -1,18 +1,18 @@
 {
   "pos_z0": {
-    "train": 494,
-    "test": 64
+    "train": 2827,
+    "test": 593
   },
   "pos_z1": {
-    "train": 494,
-    "test": 64
+    "train": 2827,
+    "test": 593
   },
   "neg_z0": {
-    "train": 494,
-    "test": 64
+    "train": 2827,
+    "test": 593
   },
   "neg_z1": {
-    "train": 494,
-    "test": 64
+    "train": 2827,
+    "test": 593
   }
 }

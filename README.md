@@ -153,7 +153,9 @@ bash scripts/finish_pan17.sh        # download (53 MB), prepare, zip for Colab
 # then on Colab: scripts/colab_run.py trains it as pan17_gb_us
 ```
 
-Emoji-labelled tweets only (as in the original), retweets left out, texts
+Emoji labels plus strong VADER labels, every quadrant matched on label source
+(emoji tweets alone leave only 558 US sad tweets; `--labels emoji` keeps them
+only), retweets left out, texts
 identical after normalisation removed, 20% of authors held out for test.
 
 ## Deviations from the original, and why
