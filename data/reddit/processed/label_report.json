@@ -1,0 +1,70 @@
+{
+  "labels": "emoji+vader",
+  "label_source": {
+    "ng/pos/emoji": 4608,
+    "ng/pos/vader": 10355,
+    "ng/neg/vader": 5213,
+    "us/neg/vader": 5119,
+    "us/pos/vader": 15621,
+    "us/pos/emoji": 1357,
+    "ng/neg/emoji": 1347,
+    "us/neg/emoji": 505
+  },
+  "unlabelled": 134467,
+  "conflicting_emojis": 268,
+  "per_length_bin_and_source": {
+    "train_3-5_tokens_emoji": 62,
+    "train_3-5_tokens_vader": 139,
+    "train_6-10_tokens_emoji": 111,
+    "train_6-10_tokens_vader": 452,
+    "train_11-20_tokens_emoji": 143,
+    "train_11-20_tokens_vader": 1399,
+    "train_21-40_tokens_emoji": 136,
+    "train_21-40_tokens_vader": 2588,
+    "test_3-5_tokens_emoji": 4,
+    "test_3-5_tokens_vader": 15,
+    "test_6-10_tokens_emoji": 12,
+    "test_6-10_tokens_vader": 58,
+    "test_11-20_tokens_emoji": 19,
+    "test_11-20_tokens_vader": 152,
+    "test_21-40_tokens_emoji": 18,
+    "test_21-40_tokens_vader": 277
+  },
+  "quadrants": {
+    "pos_ng": {
+      "train": 5030,
+      "test": 555
+    },
+    "pos_us": {
+      "train": 5030,
+      "test": 555
+    },
+    "neg_ng": {
+      "train": 5030,
+      "test": 555
+    },
+    "neg_us": {
+      "train": 5030,
+      "test": 555
+    }
+  },
+  "quadrant_label_sources": {
+    "pos_ng": {
+      "vader": 5080,
+      "emoji": 505
+    },
+    "pos_us": {
+      "vader": 5080,
+      "emoji": 505
+    },
+    "neg_ng": {
+      "vader": 5080,
+      "emoji": 505
+    },
+    "neg_us": {
+      "vader": 5080,
+      "emoji": 505
+    }
+  },
+  "total": 22340
+}

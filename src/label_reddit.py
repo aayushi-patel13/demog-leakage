@@ -14,9 +14,13 @@ Sentiment (main task y), in the spirit of the original emoji-based labels:
 Protected attribute z: ng (Nigerian English subreddits) = 1, us = 0.
 
 Design guards
-  * the four quadrants are balanced, and matched on comment length (per length
-    bin, every quadrant gets the same count), so length cannot stand in for
-    dialect;
+  * the four quadrants are balanced, and matched on comment length and on
+    label source (per length bin and source, every quadrant gets the same
+    count), so neither length nor the way a comment was labelled can stand in
+    for dialect. (Emojis are about four times more common in the Nigerian
+    comments, so without the source match the Nigerian quadrants would hold
+    more emoji-labelled and fewer VADER-labelled comments, which differ in
+    wording);
   * train and test are author-disjoint (10% of authors held out), so an
     attacker cannot succeed by recognising individual people.
 Variants: tokens (as written) and masked (topic words replaced by _TOPIC_).
@@ -66,7 +70,7 @@ def main():
 
     vader = vader_labeller() if args.labels == "emoji+vader" else None
     rep = {"labels": args.labels, "label_source": Counter(), "unlabelled": 0, "conflicting_emojis": 0}
-    pools = defaultdict(list)  # (sent, group, bin, split) -> rows
+    pools = defaultdict(list)  # (sent, group, bin, split, source) -> rows
     for ln in open(args.clean, encoding="utf-8"):
         c = json.loads(ln)
         if c["happy"] and c["sad"]:
@@ -87,21 +91,23 @@ def main():
             continue
         split = "test" if is_test_author(c["author_hash"]) else "train"
         c["label_source"] = src
-        pools[(sent, c["group"], b, split)].append(c)
+        pools[(sent, c["group"], b, split, src)].append(c)
         rep["label_source"][f"{c['group']}/{sent}/{src}"] += 1
 
     rng = random.Random(SEED)
     quads = {q: {"train": [], "test": []} for q in ("pos_ng", "pos_us", "neg_ng", "neg_us")}
-    rep["per_length_bin"] = {}
+    rep["per_length_bin_and_source"] = {}
+    sources = ("emoji", "vader") if vader else ("emoji",)
     for split in ("train", "test"):
         for b, rng_bin in enumerate(LEN_BINS):
-            keys = [(s, g, b, split) for s in ("pos", "neg") for g in ("ng", "us")]
-            k = min(len(pools[key]) for key in keys)
-            rep["per_length_bin"][f"{split}_{rng_bin[0]}-{rng_bin[1]}_tokens"] = k
-            for s, g, _, _ in keys:
-                rows = pools[(s, g, b, split)]
-                rng.shuffle(rows)
-                quads[f"{s}_{g}"][split] += rows[:k]
+            for src in sources:
+                keys = [(s, g, b, split, src) for s in ("pos", "neg") for g in ("ng", "us")]
+                k = min(len(pools[key]) for key in keys)
+                rep["per_length_bin_and_source"][f"{split}_{rng_bin[0]}-{rng_bin[1]}_tokens_{src}"] = k
+                for s, g, _, _, _ in keys:
+                    rows = pools[(s, g, b, split, src)]
+                    rng.shuffle(rows)
+                    quads[f"{s}_{g}"][split] += rows[:k]
     split_counts = {}
     for variant, field in (("tokens", "tokens"), ("masked", "tokens_masked")):
         d = os.path.join(args.out, variant)
@@ -122,6 +128,8 @@ def main():
         json.dump(split_counts, open(os.path.join(d, "split.json"), "w"), indent=2)
     rep["label_source"] = dict(rep["label_source"])
     rep["quadrants"] = split_counts
+    rep["quadrant_label_sources"] = {
+        q: dict(Counter(c["label_source"] for part in parts.values() for c in part)) for q, parts in quads.items()}
     rep["total"] = sum(v["train"] + v["test"] for v in split_counts.values())
     json.dump(rep, open(os.path.join(args.out, "label_report.json"), "w"), indent=2)
     print(json.dumps(rep, indent=2))

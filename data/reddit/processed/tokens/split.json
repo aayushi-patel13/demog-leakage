@@ -1,0 +1,18 @@
+{
+  "pos_ng": {
+    "train": 5030,
+    "test": 555
+  },
+  "pos_us": {
+    "train": 5030,
+    "test": 555
+  },
+  "neg_ng": {
+    "train": 5030,
+    "test": 555
+  },
+  "neg_us": {
+    "train": 5030,
+    "test": 555
+  }
+}

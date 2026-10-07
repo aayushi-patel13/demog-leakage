@@ -53,6 +53,9 @@ def main():
             m = re.match(r"\s+r/(\w+): skipping ", ln)
             if m:
                 skips[m.group(1)] += 1
+    if c:   # only subreddits that are part of the dataset
+        used = {k.split("/")[1] for k in c["raw_per_subreddit"]}
+        skips = Counter({s: n for s, n in skips.items() if s in used})
     if skips:
         md += ["One-hour windows the archive refused even after retries (skipped): " +
                ", ".join(f"r/{s} {n}" for s, n in sorted(skips.items())) + ".", ""]
@@ -67,8 +70,14 @@ def main():
             "| Quadrant | Train | Test (held-out authors) |", "|---|---:|---:|"]
         for q, v in lab["quadrants"].items():
             md.append(f"| {q} | {v['train']:,} | {v['test']:,} |")
+        qs = lab.get("quadrant_label_sources")
+        src_note = ""
+        if qs:
+            one = next(iter(qs.values()))
+            src_note = (" and on label source (each quadrant: " +
+                        ", ".join(f"{n:,} {k}" for k, n in sorted(one.items())) + ")")
         md += ["", f"Total {lab['total']:,} comments, balanced across the four quadrants and matched on "
-               "length (3-5, 6-10, 11-20, 21-40 tokens).", ""]
+               f"length (3-5, 6-10, 11-20, 21-40 tokens){src_note}.", ""]
     sc = load(os.path.join(args.annotation, "sample_annotated_scores.json"))
     if sc:
         md += ["### Human annotation (blind sample)", ""]

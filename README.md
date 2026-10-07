@@ -182,7 +182,7 @@ python src/experiments.py run-all --data data/processed/pan17_gb_us --epochs 20 
 * **Reddit collection cut short.** From 7 October 2026 the archive answered
   most requests with "Timeout. Maybe slow down a bit". By then r/Nigeria had
   reached 6 March 2025 and r/philadelphia only April 2024, so r/philadelphia is
-  left out and cleaning runs with `--until 2025-03-06`: both groups cover
+  left out (its file moved to `data/reddit/raw/excluded/`) and cleaning runs with `--until 2025-03-06`: both groups cover
   1 January 2024 to 5 March 2025. The collector also skipped 364 one-hour
   windows that the archive kept refusing (188 US, 176 Nigerian; listed in the
   collection logs).

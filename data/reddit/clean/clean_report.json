@@ -1,0 +1,115 @@
+{
+  "until": "2025-03-06",
+  "raw_per_subreddit": {
+    "ng/Abuja": 52,
+    "ng/Nigeria": 235620,
+    "ng/lagos": 665,
+    "us/AskAnAmerican": 54700,
+    "us/Atlanta": 54605,
+    "us/chicago": 54700,
+    "us/houston": 54700
+  },
+  "dropped": {
+    "deleted_or_removed": 18759,
+    "length_outside_3_40": 125815,
+    "after_until_date": 47466,
+    "bot_or_deleted_author": 4548,
+    "author_in_both_groups": 1627,
+    "over_author_cap": 74097,
+    "duplicate_text": 3870
+  },
+  "authors_in_both_groups": 113,
+  "final_per_group": {
+    "us": {
+      "comments": 99233,
+      "with_sentiment_emoji": 1887,
+      "pidgin_2plus_markers": 3,
+      "topic_masked_tokens": 13401,
+      "authors": 41721,
+      "median_tokens": 16
+    },
+    "ng": {
+      "comments": 79627,
+      "with_sentiment_emoji": 6198,
+      "pidgin_2plus_markers": 502,
+      "topic_masked_tokens": 20558,
+      "authors": 17641,
+      "median_tokens": 14
+    }
+  },
+  "collected_span": {
+    "ng/Abuja": [
+      "2024-02-27",
+      "2025-06-14"
+    ],
+    "ng/Nigeria": [
+      "2024-01-01",
+      "2025-03-06"
+    ],
+    "ng/lagos": [
+      "2024-01-02",
+      "2025-06-30"
+    ],
+    "us/AskAnAmerican": [
+      "2024-01-01",
+      "2025-06-30"
+    ],
+    "us/Atlanta": [
+      "2024-01-01",
+      "2025-06-30"
+    ],
+    "us/chicago": [
+      "2024-01-01",
+      "2025-06-30"
+    ],
+    "us/houston": [
+      "2024-01-01",
+      "2025-06-30"
+    ]
+  },
+  "final_per_subreddit": {
+    "us/Atlanta": 23125,
+    "ng/Nigeria": 79257,
+    "us/chicago": 26977,
+    "us/houston": 24278,
+    "us/AskAnAmerican": 24853,
+    "ng/lagos": 348,
+    "ng/Abuja": 22
+  },
+  "final_per_month": {
+    "us": {
+      "2024-01": 7248,
+      "2024-02": 6736,
+      "2024-03": 7157,
+      "2024-04": 6838,
+      "2024-05": 7334,
+      "2024-06": 6886,
+      "2024-07": 7335,
+      "2024-08": 7175,
+      "2024-09": 6760,
+      "2024-10": 6981,
+      "2024-11": 6787,
+      "2024-12": 7070,
+      "2025-01": 7243,
+      "2025-02": 6508,
+      "2025-03": 1175
+    },
+    "ng": {
+      "2024-01": 4210,
+      "2024-02": 4368,
+      "2024-03": 3836,
+      "2024-04": 3921,
+      "2024-05": 4483,
+      "2024-06": 4289,
+      "2024-07": 6237,
+      "2024-08": 5635,
+      "2024-09": 6264,
+      "2024-10": 6435,
+      "2024-11": 6966,
+      "2024-12": 7328,
+      "2025-01": 6646,
+      "2025-02": 7756,
+      "2025-03": 1253
+    }
+  }
+}
