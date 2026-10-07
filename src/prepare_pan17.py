@@ -14,7 +14,10 @@ If the XML files turn out to hold tweet ids instead of text, the script says so:
 that would mean PAN17 has the same decay problem as PAN16.
 
 Train and test are author-disjoint (each author contributes ~100 tweets, so a
-shared author would let an attacker recognise people rather than varieties).
+shared author would let an attacker recognise people rather than varieties);
+20% of authors are held out for test. Retweets are left out (not the author's
+own writing), and so is every text that is identical to another after
+normalisation, as in the clean TwitterAAE data.
 
 Usage:
   python src/prepare_pan17.py data/raw/pan17/en data/processed/pan17_gb_us
@@ -78,11 +81,14 @@ def main():
         if val not in (args.z1, args.z0):
             continue
         z = 1 if val == args.z1 else 0
-        split = "test" if int(hashlib.md5(aid.encode()).hexdigest(), 16) % 10 == 0 else "train"
+        split = "test" if int(hashlib.md5(aid.encode()).hexdigest(), 16) % 10 < 2 else "train"
         for tw in read_author(path):
             rep["tweets_read"] += 1
             if re.fullmatch(r"\d{15,20}", tw):
                 rep["looks_like_ids_only"] += 1
+                continue
+            if tw.startswith("RT @"):
+                rep["retweets_skipped"] = rep.get("retweets_skipped", 0) + 1
                 continue
             h, s = emoji_hits(tw, HAPPY), emoji_hits(tw, SAD)
             if not h and not s:
@@ -99,6 +105,12 @@ def main():
     if rep["tweets_read"] and rep["looks_like_ids_only"] > 0.5 * rep["tweets_read"]:
         print("WARNING: most documents are tweet ids, not text. PAN17 would then need the Twitter API,"
               " like PAN16, and cannot be used without it.")
+    # texts identical after normalisation, anywhere in the pools: drop every copy
+    seen = Counter(" ".join(t) for rows in pools.values() for t in rows)
+    for key in pools:
+        before = len(pools[key])
+        pools[key] = [t for t in pools[key] if seen[" ".join(t)] == 1]
+        rep["dropped_same_after_normalising"] = rep.get("dropped_same_after_normalising", 0) + before - len(pools[key])
     rng = random.Random(SEED)
     os.makedirs(args.output, exist_ok=True)
     split_counts = {}

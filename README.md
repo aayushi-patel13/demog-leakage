@@ -149,11 +149,12 @@ are rarer on Reddit.
 ## 3. Existing dataset: PAN 2017 author profiling
 
 ```bash
-bash scripts/get_pan17.sh
-python src/prepare_pan17.py data/raw/pan17/<path>/en data/processed/pan17_gb_us
-python src/experiments.py run-all --data data/processed/pan17_gb_us --epochs 20 \
-    --tag pan17_gb_us --attribute "variety (GB vs US)" --no-paper
+bash scripts/finish_pan17.sh        # download (53 MB), prepare, zip for Colab
+# then on Colab: scripts/colab_run.py trains it as pan17_gb_us
 ```
+
+Emoji-labelled tweets only (as in the original), retweets left out, texts
+identical after normalisation removed, 20% of authors held out for test.
 
 ## Deviations from the original, and why
 

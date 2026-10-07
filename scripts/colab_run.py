@@ -6,15 +6,16 @@
     %cd /content/demog-leakage
     !python scripts/colab_run.py
 
-Reads processed_data.zip (TwitterAAE) and, when present, reddit_data.zip from
+Reads processed_data.zip (TwitterAAE) and, when present, reddit_data.zip and pan17_data.zip from
 MyDrive/comp8240, and writes every result to MyDrive/comp8240/results so it
 survives a disconnect. A run whose results.md is already in Drive is skipped,
 so after a disconnect the same cell simply carries on with what is left. The
 cell clones a fresh copy every time (results live in Drive, not in the copy).
-Order: TwitterAAE replication, Reddit (tokens, masked), TwitterAAE faithful;
+Order: TwitterAAE replication, Reddit (tokens, masked), PAN 2017, TwitterAAE faithful;
 with --extra, then the adversarial check (more seeds, one longer run).
 """
 import argparse
+import glob
 import os
 import shutil
 import subprocess
@@ -25,6 +26,7 @@ RUNS = [
     ("twitteraae", "data/processed/sent_race", []),
     ("reddit_tokens", "data/reddit/processed/tokens", ["--attribute", "variety (NG vs US)", "--no-paper"]),
     ("reddit_masked", "data/reddit/processed/masked", ["--attribute", "variety (NG vs US)", "--no-paper"]),
+    ("pan17_gb_us", "data/processed/pan17_gb_us", ["--attribute", "variety (GB vs US)", "--no-paper"]),
     ("twitteraae_faithful", "data/processed/sent_race_faithful", []),
 ]
 
@@ -47,7 +49,8 @@ def main():
     print("device:", torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu", flush=True)
 
     D = args.drive
-    for name, dest in (("processed_data.zip", "data/processed"), ("reddit_data.zip", ".")):
+    for name, dest in (("processed_data.zip", "data/processed"), ("reddit_data.zip", "."),
+                       ("pan17_data.zip", "data/processed")):
         z = os.path.join(D, name)
         if os.path.exists(z):
             zipfile.ZipFile(z).extractall(dest)
@@ -65,7 +68,7 @@ def main():
     for tag, data, extra in RUNS:
         if args.only and tag not in args.only:
             continue
-        if not os.path.exists(os.path.join(data, "pos_wh.txt" if "processed/sent" in data else "pos_ng.txt")):
+        if not glob.glob(os.path.join(data, "pos_*.txt")):
             print(f"\n== {tag}: no data, skipped", flush=True)
             continue
         if os.path.exists(os.path.join("results", tag, "results.md")):

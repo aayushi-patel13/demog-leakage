@@ -25,6 +25,8 @@ assert len(allx) == len(set(allx)), "clean data has repeated texts"
 assert rep["test_sentences_also_in_train"] == 0
 print("clean data checks OK")
 EOF
+python tests/mock_pan17.py data/mock/pan17/en > /dev/null
+python src/prepare_pan17.py data/mock/pan17/en data/mock/pan17_gb_us > /dev/null
 python tests/mock_reddit.py
 python src/preprocess_reddit.py --raw data/mock/reddit_raw --out data/mock/reddit_clean > /dev/null
 python src/label_reddit.py --clean data/mock/reddit_clean/comments.jsonl --out data/mock/reddit_processed > /dev/null

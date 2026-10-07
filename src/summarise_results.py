@@ -18,7 +18,8 @@ from data import make_splits  # noqa: E402
 RUNS = [("twitteraae", "Tweets, race (clean data)"),
         ("twitteraae_faithful", "Tweets, race (original pipeline as written)"),
         ("reddit_tokens", "Reddit, NG vs US"),
-        ("reddit_masked", "Reddit, NG vs US, topic words masked")]
+        ("reddit_masked", "Reddit, NG vs US, topic words masked"),
+        ("pan17_gb_us", "Tweets, GB vs US English (PAN 2017)")]
 PAPER = {"y_alone": 67.4, "z_alone": 83.9, "leak": 64.5, "adv_y": 64.7, "adv_adv": None, "adv_leak": 56.0}
 
 
