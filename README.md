@@ -21,6 +21,10 @@ demographic attribute well above chance.
 | `src/label_reddit.py` | distant-supervision sentiment (emoji, optionally VADER), length-matched balanced quadrants, author-disjoint split |
 | `src/annotation.py` | blind human-annotation sample (200 comments) and agreement scoring |
 | `src/prepare_pan17.py` | existing dataset: PAN 2017 English, variety (GB vs US) or gender as the protected attribute |
+| `scripts/run_original.sh` | runs the authors' original Python 2.7 / DyNet code on the faithful data (see below) |
+| `scripts/finish_reddit.sh` | after collection: common end date, cleaning, labels, annotation sheet, summary, zip for Colab |
+| `src/report_reddit.py` | summary of the Reddit dataset and the annotation scores (`results/reddit_data.md`) |
+| `scripts/colab_run.py` | every training run on a Colab GPU, results saved to Google Drive, resumable |
 | `scripts/smoke_test.sh` | runs everything on mock data in about 5 minutes |
 
 ## Environment
@@ -28,11 +32,20 @@ demographic attribute well above chance.
 * **GitHub Codespaces** (2 cores, 8 GB): data download, preparation, Reddit
   collection and the smoke test. Install with
   `pip install torch --index-url https://download.pytorch.org/whl/cpu && pip install -r requirements.txt`.
-* **Google Colab** (T4 GPU): the training runs. Clone this repository, unzip the
-  prepared data (made in Codespaces with
+* **Google Colab** (T4 GPU): the training runs. Put `processed_data.zip`
+  (made in Codespaces with
   `cd data/processed && zip -r ../../processed_data.zip sent_race sent_race_faithful`)
-  into `data/processed/`, and run the `experiments.py run-all` commands below.
-  The prepared tweets are not in this repository.
+  and `reddit_data.zip` (made by `scripts/finish_reddit.sh`) in `MyDrive/comp8240`,
+  then run in one Colab cell:
+
+  ```
+  from google.colab import drive; drive.mount('/content/drive')
+  !git clone -q https://github.com/aayushi-patel13/demog-leakage.git /content/demog-leakage 2>/dev/null || git -C /content/demog-leakage pull -q
+  %cd /content/demog-leakage
+  !python scripts/colab_run.py
+  ```
+
+  The prepared tweets and comments are not in this repository.
 
 First, check the environment (about 5 minutes):
 
@@ -73,6 +86,25 @@ original code behaves as written, for an ablation against the clean data:
 ```bash
 python src/prepare_twitteraae.py data/raw/TwitterAAE-full-v1.zip data/processed/sent_race_faithful --mode faithful
 ```
+
+### The authors' original code
+
+```bash
+bash scripts/run_original.sh          # about 5 min setup, then roughly 25 min + 40 min on 2 CPU cores
+```
+
+This clones github.com/yanaiela/demog-text-removal, writes the faithful
+TwitterAAE data in its file format (word ids plus a vocabulary file, as its
+`make_data.py` produces), and runs its `trainer.py` unchanged under Python 2.7
+with mainline DyNet 2.1.2: one epoch of the sentiment baseline and one of
+adversarial training (lambda = 1), with the options from its `runs.md`.
+Python 2.7 comes from Docker if available, otherwise it is built from source
+into `~/py27`. The authors used their own DyNet fork, so
+`scripts/original_launcher.py` applies two shims without editing their files:
+the fork's `flip_gradient(x, ro)` becomes mainline `scale_gradient(x, -ro)`,
+and the TensorBoard logger becomes a no-op. On CPU a training pass takes
+about 25 minutes, so the original code is run as a check on the port, and the
+full experiments use the port on a GPU. Logs: `results/original_code/`.
 
 ## 2. Constructed dataset: US vs Nigerian English on Reddit
 
@@ -121,7 +153,8 @@ python src/experiments.py run-all --data data/processed/pan17_gb_us --epochs 20 
 
 ## Deviations from the original, and why
 
-* **Framework.** The released code is Python 2 with a custom DyNet fork; it is
+* **Framework.** The released code is Python 2 with a custom DyNet fork. It
+  still runs (see *The authors' original code*), but only on CPU, so it is
   reimplemented in PyTorch with the same sizes and optimiser settings (momentum
   SGD, lr 0.01, summed losses over batches of 32, gradient clipping at 5,
   sparse embedding updates, dropout 0.2).
@@ -146,12 +179,13 @@ python src/experiments.py run-all --data data/processed/pan17_gb_us --epochs 20 
   texts appeared under both labels. The clean data drops every such text.
 * **Gender/age branch not reproduced.** PAN16 ships tweet ids only and the
   Twitter API that rehydrated them is no longer free.
-* **Reddit collection cut short.** From 7 October 2026 the archive throttled
-  most requests ("Timeout. Maybe slow down a bit"), slowing collection to a
-  crawl. r/philadelphia was not collected, a few one-hour windows were
-  skipped (listed in the collection logs), and r/Nigeria stopped partway
-  through the window. Cleaning is run with `--until` set to the day the
-  Nigerian collection reached, so both groups cover the same months.
+* **Reddit collection cut short.** From 7 October 2026 the archive answered
+  most requests with "Timeout. Maybe slow down a bit". By then r/Nigeria had
+  reached 6 March 2025 and r/philadelphia only April 2024, so r/philadelphia is
+  left out and cleaning runs with `--until 2025-03-06`: both groups cover
+  1 January 2024 to 5 March 2025. The collector also skipped 364 one-hour
+  windows that the archive kept refusing (188 US, 176 Nigerian; listed in the
+  collection logs).
 * **Reddit access.** The proposal planned the official Reddit API; self-service
   keys were withdrawn in late 2025, so comments come from the Arctic Shift
   public archive instead.

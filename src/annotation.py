@@ -49,7 +49,8 @@ def sample(args):
                           "label_source": r["label_source"], "group": group, "subreddit": c["subreddit"]})
     rng.shuffle(items)
     os.makedirs(args.out, exist_ok=True)
-    with open(os.path.join(args.out, "sample_for_annotation.csv"), "w", newline="", encoding="utf-8") as fh:
+    # utf-8-sig: Excel then shows emojis and accents correctly
+    with open(os.path.join(args.out, "sample_for_annotation.csv"), "w", newline="", encoding="utf-8-sig") as fh:
         w = csv.writer(fh)
         w.writerow(["item", "id", "text", "human_sentiment", "human_variety", "notes"])
         for i, it in enumerate(items, 1):
