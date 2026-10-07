@@ -20,6 +20,7 @@
 """
 import argparse
 import csv
+import io
 import json
 import os
 import random
@@ -64,6 +65,36 @@ def sample(args):
     print(f"wrote {len(items)} items to {args.out}/sample_for_annotation.csv (key kept separately)")
 
 
+def read_sheet(path):
+    """Rows of the annotation sheet as dicts. Accepts a real CSV (UTF-8, or the
+    Windows / Mac encodings Excel uses for plain CSV) or an Excel workbook, which
+    is what Excel writes when a sheet is saved in its own format under any name."""
+    with open(path, "rb") as fh:
+        head = fh.read(4)
+    if head == b"PK\x03\x04":   # a zip: .xlsx (or a Numbers file)
+        try:
+            import openpyxl
+        except ImportError:
+            raise SystemExit(f"{path} is an Excel workbook, not a CSV. Run: pip install openpyxl  "
+                             "(or save the sheet as 'CSV UTF-8') and try again.")
+        try:
+            with open(path, "rb") as fh:   # a file object, so the .csv name does not matter
+                ws = openpyxl.load_workbook(io.BytesIO(fh.read()), read_only=True, data_only=True).active
+        except Exception as e:
+            raise SystemExit(f"Could not read {path} as an Excel workbook ({e}). "
+                             "Save the sheet as 'CSV UTF-8 (Comma delimited)' and try again.")
+        rows = list(ws.iter_rows(values_only=True))
+        header = ["" if h is None else str(h).strip() for h in rows[0]]
+        return [{h: ("" if v is None else str(v)) for h, v in zip(header, r)} for r in rows[1:]]
+    for enc in ("utf-8-sig", "cp1252", "mac_roman"):
+        try:
+            with open(path, encoding=enc, newline="") as fh:
+                return list(csv.DictReader(fh))
+        except UnicodeDecodeError:
+            continue
+    raise SystemExit(f"Could not read {path}; save it as 'CSV UTF-8 (Comma delimited)'.")
+
+
 def kappa(a, b):
     labels = sorted(set(a) | set(b))
     n = len(a)
@@ -75,7 +106,7 @@ def kappa(a, b):
 
 def score(args):
     key = {r["id"]: r for r in csv.DictReader(open(args.key, encoding="utf-8"))}
-    rows = [r for r in csv.DictReader(open(args.sheet, encoding="utf-8-sig"))]
+    rows = read_sheet(args.sheet)
     # a human sheet has human_* columns; the LLM-judge sheet has llm_* columns
     who = "llm" if rows and "llm_sentiment" in rows[0] else "human"
     norm_s = {"pos": "pos", "positive": "pos", "p": "pos", "neg": "neg", "negative": "neg", "n": "neg",

@@ -1,0 +1,21 @@
+{
+  "annotator": "human",
+  "annotated_sentiment": 49,
+  "annotated_variety": 49,
+  "sentiment_agreement_pct": 61.2,
+  "sentiment_kappa": 0.395,
+  "human_said_neutral_pct": 28.6,
+  "agreement_by_label_source": {
+    "vader": {
+      "n": 44,
+      "agreement_pct": 61.4
+    },
+    "emoji": {
+      "n": 5,
+      "agreement_pct": 60.0
+    }
+  },
+  "variety_unsure_pct": 34.7,
+  "variety_accuracy_when_decided_pct": 53.1,
+  "variety_accuracy_unsure_as_chance_pct": 52.0
+}
