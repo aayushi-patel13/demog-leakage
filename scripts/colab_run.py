@@ -1,14 +1,16 @@
 """All training runs, for a Colab GPU session. Paste into one Colab cell:
 
     from google.colab import drive; drive.mount('/content/drive')
-    !git clone -q https://github.com/aayushi-patel13/demog-leakage.git /content/demog-leakage 2>/dev/null || git -C /content/demog-leakage pull -q
+    %cd /content
+    !rm -rf demog-leakage && git clone -q https://github.com/aayushi-patel13/demog-leakage.git
     %cd /content/demog-leakage
     !python scripts/colab_run.py
 
 Reads processed_data.zip (TwitterAAE) and, when present, reddit_data.zip from
 MyDrive/comp8240, and writes every result to MyDrive/comp8240/results so it
 survives a disconnect. A run whose results.md is already in Drive is skipped,
-so after a disconnect the same cell simply carries on with what is left.
+so after a disconnect the same cell simply carries on with what is left. The
+cell clones a fresh copy every time (results live in Drive, not in the copy).
 Order: TwitterAAE replication, Reddit (tokens, masked), TwitterAAE faithful;
 with --extra, then the adversarial check (more seeds, one longer run).
 """

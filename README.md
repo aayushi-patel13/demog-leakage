@@ -40,9 +40,10 @@ demographic attribute well above chance.
 
   ```
   from google.colab import drive; drive.mount('/content/drive')
-  !git clone -q https://github.com/aayushi-patel13/demog-leakage.git /content/demog-leakage 2>/dev/null || git -C /content/demog-leakage pull -q
+  %cd /content
+  !rm -rf demog-leakage && git clone -q https://github.com/aayushi-patel13/demog-leakage.git
   %cd /content/demog-leakage
-  !python scripts/colab_run.py
+  !python scripts/colab_run.py            # add --extra for the adversarial check
   ```
 
   The prepared tweets and comments are not in this repository.
