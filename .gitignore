@@ -1,16 +1,18 @@
-# large or third-party data: download with the scripts, never commit
+# Downloads, and every file that holds tweet or comment text, stay out of the
+# public repository. Only code, configuration, reports and results go in.
 data/raw/
 data/mock/
 data/reddit/raw/
+data/reddit/clean/*.jsonl
+data/reddit/processed/*/*.txt
+data/reddit/processed/*/*.ids.jsonl
+data/processed/*/*.txt
+annotation/*.csv
 models/
+notebooks/
+*.zip
+*.log
+nohup.out
 __pycache__/
 *.pyc
 .ipynb_checkpoints/
-# keep: data/processed/*/data_report.json, data/reddit/clean/*report.json,
-#       data/reddit/processed/ (the constructed dataset), results/, annotation/
-data/processed/*/*.txt
-!data/processed/*/data_report.json
-*.log
-*.zip
-notebooks/
-nohup.out

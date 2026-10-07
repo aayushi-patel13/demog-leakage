@@ -21,21 +21,18 @@ demographic attribute well above chance.
 | `src/label_reddit.py` | distant-supervision sentiment (emoji, optionally VADER), length-matched balanced quadrants, author-disjoint split |
 | `src/annotation.py` | blind human-annotation sample (200 comments) and agreement scoring |
 | `src/prepare_pan17.py` | existing dataset: PAN 2017 English, variety (GB vs US) or gender as the protected attribute |
-| `notebooks/replicate_on_colab.ipynb` | the replication on a free Colab GPU |
 | `scripts/smoke_test.sh` | runs everything on mock data in about 5 minutes |
 
 ## Environment
 
-* **GitHub Codespaces** (the unit's VM): open the repo, *Code → Codespaces →
-  Create*. The dev container installs Python 3.11, CPU PyTorch and the
-  requirements. 2 cores / 8 GB is enough for everything; the replication
-  training takes about 3-4 hours on CPU.
-* **Google Colab** (the unit's suggested notebook environment): use
-  `notebooks/replicate_on_colab.ipynb` with a T4 GPU for the training step.
-  Prepare the data in Codespaces, then
-  `cd data/processed && zip -r ../../processed_data.zip sent_race sent_race_faithful`,
-  download `processed_data.zip` and put it in `MyDrive/comp8240/` on Google Drive.
-  (The prepared tweets are not committed to the public repository.)
+* **GitHub Codespaces** (2 cores, 8 GB): data download, preparation, Reddit
+  collection and the smoke test. Install with
+  `pip install torch --index-url https://download.pytorch.org/whl/cpu && pip install -r requirements.txt`.
+* **Google Colab** (T4 GPU): the training runs. Clone this repository, unzip the
+  prepared data (made in Codespaces with
+  `cd data/processed && zip -r ../../processed_data.zip sent_race sent_race_faithful`)
+  into `data/processed/`, and run the `experiments.py run-all` commands below.
+  The prepared tweets are not in this repository.
 
 First, check the environment (about 5 minutes):
 

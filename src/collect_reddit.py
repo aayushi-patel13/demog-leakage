@@ -132,7 +132,7 @@ def last_saved(path):
     return ids, last_t, per_day
 
 
-def page_through(sub, lo, hi, want, seen, out, group, fetch, pause, state, gaps):
+def page_through(sub, lo, hi, want, seen, out, group, fetch, pause, state, gaps, progress=None):
     """Save up to `want` unseen comments created in [lo, hi), in time order.
 
     Queries cover [cursor, cursor + span]. When the archive refuses a query
@@ -179,6 +179,8 @@ def page_through(sub, lo, hi, want, seen, out, group, fetch, pause, state, gaps)
             got += 1
         out.flush()
         newest = max(int(c["created_utc"]) for c in page)
+        if progress:
+            progress(got, newest)
         # Re-request from one second before the newest comment, so comments
         # sharing that second are not skipped; saved ids are filtered above.
         cursor = max(cursor, newest - 1) if new else max(cursor + 1, newest)
@@ -234,9 +236,16 @@ def collect_sub(group, sub, after, before, cap, outdir, pause, fetch=fetch_page,
                 month = day(d0)[:7]
             want = min(quota - (saved[d] if spread else 0), cap - n)
             mid = min(d0 + off, d1 - 1)
+            report = None
+            if not spread:   # one long pass: report every 2,000 comments
+                def report(got, t, n0=n, mark=[n // 2000]):
+                    if (n0 + got) // 2000 > mark[0]:
+                        mark[0] = (n0 + got) // 2000
+                        print(f"    r/{sub}: {n0 + got:,} comments (up to {day(t)[:10]})", flush=True)
             for lo, hi in ((mid, d1), (d0, mid)):
                 if want > 0 and hi > lo:
-                    got = page_through(sub, lo, hi, want, seen, out, group, fetch, pause, state, gaps)
+                    got = page_through(sub, lo, hi, want, seen, out, group, fetch, pause, state, gaps,
+                                       progress=report)
                     want -= got
                     n += got
     print(f"[{group}] r/{sub}: done, {n:,} comments"
