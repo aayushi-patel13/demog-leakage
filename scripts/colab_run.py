@@ -9,7 +9,8 @@ Reads processed_data.zip (TwitterAAE) and, when present, reddit_data.zip from
 MyDrive/comp8240, and writes every result to MyDrive/comp8240/results so it
 survives a disconnect. A run whose results.md is already in Drive is skipped,
 so after a disconnect the same cell simply carries on with what is left.
-Order: TwitterAAE replication, Reddit (tokens, masked), TwitterAAE faithful.
+Order: TwitterAAE replication, Reddit (tokens, masked), TwitterAAE faithful;
+with --extra, then the adversarial check (more seeds, one longer run).
 """
 import argparse
 import os
@@ -32,6 +33,8 @@ def main():
     ap.add_argument("--epochs", type=int, default=20)
     ap.add_argument("--only", nargs="*", help="run only these tags")
     ap.add_argument("--allow-cpu", action="store_true")
+    ap.add_argument("--extra", action="store_true",
+                    help="also run the adversarial check (two more seeds and a 60-epoch run, about an hour)")
     ap.add_argument("--max-train", type=int, default=None, help="testing only")
     ap.add_argument("--attacker-epochs", type=int, default=None, help="testing only")
     args = ap.parse_args()
@@ -75,6 +78,20 @@ def main():
         if args.attacker_epochs:
             cmd += ["--attacker-epochs", str(args.attacker_epochs)]
         subprocess.run(cmd, check=True)
+        done.append(tag)
+    if args.extra:
+        tag = "twitteraae_advcheck"
+        if os.path.exists(os.path.join("results", tag, "results.md")):
+            print(f"\n== {tag}: already finished (results in Drive), skipped", flush=True)
+        else:
+            print(f"\n== {tag}: adversarial training with more seeds and a longer run", flush=True)
+            cmd = [sys.executable, "src/experiments.py", "adv-check", "--data", "data/processed/sent_race",
+                   "--tag", tag]
+            if args.max_train:
+                cmd += ["--max-train", str(args.max_train), "--epochs", "2", "--long-epochs", "4"]
+            if args.attacker_epochs:
+                cmd += ["--attacker-epochs", str(args.attacker_epochs)]
+            subprocess.run(cmd, check=True)
         done.append(tag)
     for tag in done:
         print(f"\n######## {tag}\n" + open(os.path.join("results", tag, "results.md"), encoding="utf-8").read())

@@ -62,7 +62,9 @@ python src/experiments.py run-all --data data/processed/sent_race --epochs 20 --
 cat results/twitteraae/results.md
 ```
 
-`run-all` runs the paper's four balanced experiments:
+`run-all` runs the paper's four balanced experiments (and `adv-check`, run by
+`scripts/colab_run.py --extra`, repeats the adversarial setting with two more
+random seeds and one 60-epoch run attacked after epochs 20, 40 and 60):
 
 | | Experiment | Paper |
 |---|---|---|

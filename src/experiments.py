@@ -4,6 +4,9 @@ Subcommands
   train    train an encoder, either on one task (lambda = 0) or adversarially
   attack   freeze a trained encoder and train a fresh post-hoc attacker on h
   run-all  run the paper's four balanced experiments and write a results table
+  adv-check  the adversarial setting again with more random seeds, plus one
+           longer run attacked after several epochs (is the leakage a matter of
+           seed, or of training too briefly?)
 
 Optimisation follows the original DyNet code: momentum SGD (lr 0.01, momentum
 0.9), losses summed over mini-batches of 32, gradient-norm clipping at 5 (DyNet's
@@ -79,7 +82,8 @@ def evaluate(model, rows, vocab, dev, target, lambd, bs=512):
     return 100 * ok_t / n, (100 * ok_a / n if lambd > 0 else None)
 
 
-def train(data, target, lambd, epochs, out, n_adv=1, batch_size=32, lr=0.01, seed=16, max_train=None, log=print):
+def train(data, target, lambd, epochs, out, n_adv=1, batch_size=32, lr=0.01, seed=16, max_train=None, log=print,
+          save_epochs=()):
     set_seed(seed)
     dev = device()
     splits, vocab = load_data(data)
@@ -114,6 +118,8 @@ def train(data, target, lambd, epochs, out, n_adv=1, batch_size=32, lr=0.01, see
             if score > best[key][0]:
                 best[key] = (score, ep)
                 torch.save(model.state_dict(), os.path.join(out, f"best_by_{key}.pt"))
+        if ep in save_epochs:
+            torch.save(model.state_dict(), os.path.join(out, f"epoch_{ep}.pt"))
     with open(os.path.join(out, "vocab.json"), "w") as fh:
         json.dump(vocab.itos, fh)
     summary = {"data": data, "target": target, "lambda": lambd, "n_adv": n_adv if lambd > 0 else 0,
@@ -145,7 +151,8 @@ def attack(data, model_dir, which="test", target="z", epochs=100, batch_size=32,
     splits, vocab = load_data(data)
     summ = json.load(open(os.path.join(model_dir, "train_summary.json")))
     model = AdvModel(len(vocab), n_adv=summ["n_adv"]).to(dev)
-    model.load_state_dict(torch.load(os.path.join(model_dir, f"best_by_{which}.pt"), map_location=dev))
+    ckpt = f"best_by_{which}.pt" if which in ("test", "val") else f"{which}.pt"
+    model.load_state_dict(torch.load(os.path.join(model_dir, ckpt), map_location=dev))
     reps = {k: encode_all(model, splits[k], vocab, dev) for k in ("train", "val", "test")}
     col = 2 if target == "z" else 1
     att = MLP().to(dev)
@@ -231,6 +238,73 @@ def run_all(data, epochs, tag, att_epochs=100, max_train=None, lambdas=(1.0,), a
     return R
 
 
+def adv_check(data, tag, seeds=(17, 18), epochs=20, long_epochs=60, long_seed=16, lam=1.0, att_epochs=100,
+              max_train=None, main_tag="twitteraae"):
+    """Adversarial training (lambda = lam) with more seeds, and one long run whose
+    encoder is attacked after several epochs. Every number is a held-out one:
+    encoder epoch and attacker epoch chosen on validation, scored on test."""
+    out, res_dir = os.path.join("models", tag), os.path.join("results", tag)
+    os.makedirs(res_dir, exist_ok=True)
+    logf = open(os.path.join(res_dir, "log.txt"), "a")
+
+    def log(msg):
+        print(msg, flush=True)
+        logf.write(msg + "\n")
+        logf.flush()
+
+    t0, rows = time.time(), []
+    main = os.path.join("results", main_tag, "results.json")
+    if os.path.exists(main):
+        e = json.load(open(main))[f"E4_adv_lambda{lam:g}"]["heldout"]
+        rows.append({"run": "seed 16 (main run)", "epochs": "20 (best on val)", "task_acc": e["task_acc"],
+                     "adversary_acc": e["adversary_acc"], "leakage": e["leakage"], "seed_run": True})
+    for sd in seeds:
+        log(f"== adversarial training, lambda = {lam:g}, seed {sd}, {epochs} epochs")
+        s = train(data, "y", lam, epochs, f"{out}/seed{sd}", seed=sd, max_train=max_train, log=log)
+        a = attack(data, f"{out}/seed{sd}", which="val", epochs=att_epochs, seed=sd, log=log)
+        sel = s["selected_by_val"]
+        rows.append({"run": f"seed {sd}", "epochs": f"{epochs} (best on val: {sel['epoch']})",
+                     "task_acc": sel["test_acc"], "adversary_acc": sel["test_adv_acc"],
+                     "leakage": a["heldout_test_at_best_val"], "seed_run": True})
+    if long_epochs:
+        marks = sorted({e for e in (epochs, (epochs + long_epochs) // 2, long_epochs) if 0 < e <= long_epochs})
+        log(f"== adversarial training, lambda = {lam:g}, seed {long_seed}, {long_epochs} epochs; "
+            f"attacked after epochs {marks}")
+        s = train(data, "y", lam, long_epochs, f"{out}/long", seed=long_seed, max_train=max_train, log=log,
+                  save_epochs=set(marks))
+        for e in marks:
+            a = attack(data, f"{out}/long", which=f"epoch_{e}", epochs=att_epochs, seed=long_seed, log=log)
+            h = s["history"][e - 1]
+            rows.append({"run": f"long run, seed {long_seed}", "epochs": f"after {e}",
+                         "task_acc": h["test_acc"], "adversary_acc": h["test_adv_acc"],
+                         "leakage": a["heldout_test_at_best_val"], "seed_run": False})
+    import statistics as st
+    seed_rows = [r for r in rows if r["seed_run"]]
+    summary = {}
+    if len(seed_rows) > 1:
+        for k in ("task_acc", "adversary_acc", "leakage"):
+            v = [r[k] for r in seed_rows]
+            summary[k] = {"mean": round(st.mean(v), 2), "sd": round(st.stdev(v), 2), "n": len(v)}
+    R = {"data": data, "lambda": lam, "attacker_epochs": att_epochs, "rows": rows, "seed_summary": summary,
+         "minutes": round((time.time() - t0) / 60, 1)}
+    json.dump(R, open(os.path.join(res_dir, "results.json"), "w"), indent=2)
+    f = lambda v: f"{v:.1f}"  # noqa: E731
+    md = [f"Adversarial training check ({data}, lambda = {lam:g}; held-out selection; chance = 50.0)", "",
+          "| Run | Epochs | Sentiment acc | Online adversary acc | Post-hoc attacker (leakage) |",
+          "|---|---|---|---|---|"]
+    md += [f"| {r['run']} | {r['epochs']} | {f(r['task_acc'])} | {f(r['adversary_acc'])} | {f(r['leakage'])} |"
+           for r in rows]
+    if summary:
+        md += ["", f"Across {summary['leakage']['n']} seeds: leakage {summary['leakage']['mean']:.1f} "
+               f"(sd {summary['leakage']['sd']:.1f}), online adversary {summary['adversary_acc']['mean']:.1f} "
+               f"(sd {summary['adversary_acc']['sd']:.1f}), sentiment {summary['task_acc']['mean']:.1f} "
+               f"(sd {summary['task_acc']['sd']:.1f})."]
+    md.append("")
+    open(os.path.join(res_dir, "results.md"), "w").write("\n".join(md))
+    log("\n" + "\n".join(md))
+    return R
+
+
 def results_table(R, lambdas=(1.0,)):
     f = lambda v: "-" if v is None else f"{v:.1f}"  # noqa: E731
     P = R.get("paper") or {k: None for k in PAPER}
@@ -291,8 +365,19 @@ def main():
     r.add_argument("--lambdas", type=float, nargs="+", default=[1.0])
     r.add_argument("--attribute", default="race", help="name of the protected attribute, for the table")
     r.add_argument("--no-paper", action="store_true", help="new data: leave out the paper's numbers")
+    c = sub.add_parser("adv-check")
+    c.add_argument("--data", required=True)
+    c.add_argument("--tag", required=True)
+    c.add_argument("--seeds", type=int, nargs="+", default=[17, 18])
+    c.add_argument("--epochs", type=int, default=20)
+    c.add_argument("--long-epochs", type=int, default=60)
+    c.add_argument("--attacker-epochs", type=int, default=100)
+    c.add_argument("--max-train", type=int, default=None)
     args = ap.parse_args()
-    if args.cmd == "train":
+    if args.cmd == "adv-check":
+        adv_check(args.data, args.tag, tuple(args.seeds), args.epochs, args.long_epochs,
+                  att_epochs=args.attacker_epochs, max_train=args.max_train)
+    elif args.cmd == "train":
         train(args.data, args.target, args.lambd, args.epochs, args.out, n_adv=args.n_adv, max_train=args.max_train)
     elif args.cmd == "attack":
         res = attack(args.data, args.model, which=args.which, epochs=args.epochs)
