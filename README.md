@@ -21,7 +21,6 @@ demographic attribute well above chance.
 | `src/label_reddit.py` | distant-supervision sentiment (emoji, optionally VADER), length-matched balanced quadrants, author-disjoint split |
 | `src/annotation.py` | blind human-annotation sample (200 comments) and agreement scoring |
 | `src/prepare_pan17.py` | existing dataset: PAN 2017 English, variety (GB vs US) or gender as the protected attribute |
-| `scripts/run_original.sh` | runs the authors' original Python 2.7 / DyNet code on the faithful data (see below) |
 | `scripts/finish_reddit.sh` | after collection: common end date, cleaning, labels, annotation sheet, summary, zip for Colab |
 | `src/report_reddit.py` | summary of the Reddit dataset and the annotation scores (`results/reddit_data.md`) |
 | `src/summarise_results.py` | every result in one table with 95% confidence intervals (`results/summary.md`) |
@@ -91,25 +90,6 @@ original code behaves as written, for an ablation against the clean data:
 python src/prepare_twitteraae.py data/raw/TwitterAAE-full-v1.zip data/processed/sent_race_faithful --mode faithful
 ```
 
-### The authors' original code
-
-```bash
-bash scripts/run_original.sh          # about 5 min setup, then roughly 25 min + 40 min on 2 CPU cores
-```
-
-This clones github.com/yanaiela/demog-text-removal, writes the faithful
-TwitterAAE data in its file format (word ids plus a vocabulary file, as its
-`make_data.py` produces), and runs its `trainer.py` unchanged under Python 2.7
-with mainline DyNet 2.1.2: one epoch of the sentiment baseline and one of
-adversarial training (lambda = 1), with the options from its `runs.md`.
-Python 2.7 comes from Docker if available, otherwise it is built from source
-into `~/py27`. The authors used their own DyNet fork, so
-`scripts/original_launcher.py` applies two shims without editing their files:
-the fork's `flip_gradient(x, ro)` becomes mainline `scale_gradient(x, -ro)`,
-and the TensorBoard logger becomes a no-op. On CPU a training pass takes
-about 25 minutes, so the original code is run as a check on the port, and the
-full experiments use the port on a GPU. Logs: `results/original_code/`.
-
 ## 2. Constructed dataset: US vs Nigerian English on Reddit
 
 ```bash
@@ -160,9 +140,8 @@ identical after normalisation removed, 20% of authors held out for test.
 
 ## Deviations from the original, and why
 
-* **Framework.** The released code is Python 2 with a custom DyNet fork. It
-  still runs (see *The authors' original code*), but only on CPU, so it is
-  reimplemented in PyTorch with the same sizes and optimiser settings (momentum
+* **Framework.** The released code is Python 2 with a custom DyNet fork, so it
+  is reimplemented in PyTorch with the same sizes and optimiser settings (momentum
   SGD, lr 0.01, summed losses over batches of 32, gradient clipping at 5,
   sparse embedding updates, dropout 0.2).
 * **Epochs.** 20 instead of 100, for the compute available; every epoch is
