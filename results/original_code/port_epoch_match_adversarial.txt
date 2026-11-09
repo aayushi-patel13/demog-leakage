@@ -1,0 +1,23 @@
+[train] target=y lambda=1.0 epochs=1 train=156,000 val=10,000 test=10,000 vocab=72,468 device=cpu
+  {"epoch": 1, "loss": 1.3138455532636397, "val_acc": 69.78, "test_acc": 68.76, "val_adv_acc": 55.87, "test_adv_acc": 55.55, "secs": 406.7}
+  attacker epoch 1: val 63.66  test 63.43
+  attacker epoch 10: val 65.85  test 65.38
+  attacker epoch 20: val 65.83  test 65.77
+  attacker epoch 30: val 67.13  test 66.39
+  attacker epoch 40: val 68.12  test 67.15
+  attacker epoch 50: val 69.08  test 67.66
+  attacker epoch 60: val 69.08  test 68.30
+  attacker epoch 70: val 69.17  test 67.77
+  attacker epoch 80: val 69.27  test 68.34
+  attacker epoch 90: val 68.28  test 67.29
+  attacker epoch 100: val 68.93  test 67.01
+{
+  "model": "models/epoch_match/adversarial",
+  "encoder_selected_by": "test",
+  "target": "z",
+  "epochs": 100,
+  "paper_protocol_max_test": 69.22000050544739,
+  "paper_protocol_epoch": 84,
+  "heldout_test_at_best_val": 68.98999810218811,
+  "heldout_epoch": 79
+}

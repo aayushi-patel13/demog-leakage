@@ -1,0 +1,582 @@
+== 2026-11-09 02:37:43 UTC  python attacker.py, 30 epochs, on sent_race-n_adv:1-ro:1.0/best_model
+[dynet] random seed: 12345
+[dynet] using autobatching
+[dynet] allocating memory: 2048MB
+[dynet] memory allocation done.
+{'--adv_depth': '1',
+ '--adv_size': '300',
+ '--att_hid_size': '300',
+ '--data': 'normal',
+ '--dropout': '0.2',
+ '--dynet-autobatch': '1',
+ '--dynet-gpus': None,
+ '--dynet-mem': '2048',
+ '--dynet-seed': '12345',
+ '--enc_size': '300',
+ '--epochs': '30',
+ '--init': '0',
+ '--lr': '0.01',
+ '--lstm_size': '1',
+ '--main_task': False,
+ '--mlp_layers': '2',
+ '--model': 'sent_race-n_adv:1-ro:1.0/best_model',
+ '--model_flip': '0',
+ '--num_adv': '1',
+ '--rnn_type': 'lstm',
+ '--ro': '1.0',
+ '--task': 'sent_race',
+ '--use_s': False,
+ '--vec_drop': '0'}
+attacker-sent_race-n_adv:1-ro:1.0/best_model
+training started
+1: task loss: 0.708570768642, adv acc: 0.55215
+2: task loss: 0.697476056814, adv acc: 0.572675
+3: task loss: 0.687679129934, adv acc: 0.589233333333
+4: task loss: 0.680374910498, adv acc: 0.6
+5: task loss: 0.675340083961, adv acc: 0.60651
+6: task loss: 0.671521041242, adv acc: 0.611925
+7: task loss: 0.667410336256, adv acc: 0.617128571429
+8: task loss: 0.663853177112, adv acc: 0.62113125
+1: task loss: 0.678248088688, adv acc: 0.6203
+2: task loss: 0.681999758336, adv acc: 0.620125
+3: task loss: 0.680008295296, adv acc: 0.622766666667
+4: task loss: 0.679262012731, adv acc: 0.6243375
+5: task loss: 0.680159624232, adv acc: 0.62381
+6: task loss: 0.679826834725, adv acc: 0.623825
+7: task loss: 0.68021222419, adv acc: 0.623421428571
+8: task loss: 0.680421961945, adv acc: 0.6227125
+train, 1, adv acc: 0.622620481928
+dev, 1, adv acc: 0.6108
+1: task loss: 0.632703890145, adv acc: 0.65435
+2: task loss: 0.63617024563, adv acc: 0.6527
+3: task loss: 0.636498695823, adv acc: 0.6543
+4: task loss: 0.636053966478, adv acc: 0.654925
+5: task loss: 0.636110019333, adv acc: 0.65452
+6: task loss: 0.636544335757, adv acc: 0.654616666667
+7: task loss: 0.635469345381, adv acc: 0.655685714286
+8: task loss: 0.634522473814, adv acc: 0.6560375
+1: task loss: 0.662182915717, adv acc: 0.6346
+2: task loss: 0.66625078012, adv acc: 0.634325
+3: task loss: 0.66442552291, adv acc: 0.637566666667
+4: task loss: 0.663778393705, adv acc: 0.6395
+5: task loss: 0.664861018797, adv acc: 0.63854
+6: task loss: 0.664648255727, adv acc: 0.638483333333
+7: task loss: 0.665022119894, adv acc: 0.637892857143
+8: task loss: 0.665226616118, adv acc: 0.6376375
+train, 2, adv acc: 0.637638554217
+dev, 2, adv acc: 0.6271
+1: task loss: 0.622124942517, adv acc: 0.6653
+2: task loss: 0.625880018485, adv acc: 0.663825
+3: task loss: 0.626517658067, adv acc: 0.664333333333
+4: task loss: 0.625935677069, adv acc: 0.6643125
+5: task loss: 0.626690771356, adv acc: 0.66351
+6: task loss: 0.62729042571, adv acc: 0.663125
+7: task loss: 0.626922656492, adv acc: 0.663435714286
+8: task loss: 0.62622696698, adv acc: 0.6638875
+1: task loss: 0.657675296474, adv acc: 0.63855
+2: task loss: 0.66186801666, adv acc: 0.63855
+3: task loss: 0.660097272086, adv acc: 0.6415
+4: task loss: 0.659517998451, adv acc: 0.64315
+5: task loss: 0.660677838426, adv acc: 0.6419
+6: task loss: 0.660511079125, adv acc: 0.641666666667
+7: task loss: 0.660871984656, adv acc: 0.641378571429
+8: task loss: 0.661040287772, adv acc: 0.6412875
+train, 3, adv acc: 0.641277108434
+dev, 3, adv acc: 0.6293
+1: task loss: 0.617714424449, adv acc: 0.67485
+2: task loss: 0.621189331308, adv acc: 0.669625
+3: task loss: 0.621616540315, adv acc: 0.670266666667
+4: task loss: 0.620998353417, adv acc: 0.67025
+5: task loss: 0.621890959774, adv acc: 0.66894
+6: task loss: 0.622636456248, adv acc: 0.668175
+7: task loss: 0.622220706426, adv acc: 0.6688
+8: task loss: 0.621658616308, adv acc: 0.66910625
+1: task loss: 0.660143490553, adv acc: 0.63935
+2: task loss: 0.664508651447, adv acc: 0.640175
+3: task loss: 0.662558119265, adv acc: 0.643033333333
+4: task loss: 0.661995295227, adv acc: 0.64475
+5: task loss: 0.663131516314, adv acc: 0.64364
+6: task loss: 0.662928478964, adv acc: 0.643583333333
+7: task loss: 0.663350808164, adv acc: 0.643135714286
+8: task loss: 0.663528903532, adv acc: 0.64285625
+train, 4, adv acc: 0.642728915663
+dev, 4, adv acc: 0.6308
+1: task loss: 0.613337478095, adv acc: 0.67735
+2: task loss: 0.617110664812, adv acc: 0.674
+3: task loss: 0.617185164128, adv acc: 0.67445
+4: task loss: 0.616790781696, adv acc: 0.6749
+5: task loss: 0.618034024283, adv acc: 0.67329
+6: task loss: 0.619048845407, adv acc: 0.672408333333
+7: task loss: 0.618669551758, adv acc: 0.673142857143
+8: task loss: 0.618320258085, adv acc: 0.67310625
+1: task loss: 0.659868818486, adv acc: 0.63865
+2: task loss: 0.664317702323, adv acc: 0.637925
+3: task loss: 0.662498770511, adv acc: 0.640433333333
+4: task loss: 0.661954802874, adv acc: 0.6419
+5: task loss: 0.663019299853, adv acc: 0.64082
+6: task loss: 0.662838767435, adv acc: 0.640583333333
+7: task loss: 0.663247206281, adv acc: 0.6403
+8: task loss: 0.66333092344, adv acc: 0.640225
+train, 5, adv acc: 0.640246987952
+dev, 5, adv acc: 0.6299
+1: task loss: 0.610323383975, adv acc: 0.68215
+2: task loss: 0.613977641213, adv acc: 0.6773
+3: task loss: 0.614048322908, adv acc: 0.6782
+4: task loss: 0.613881389838, adv acc: 0.677475
+5: task loss: 0.614818473792, adv acc: 0.67616
+6: task loss: 0.615634995337, adv acc: 0.675425
+7: task loss: 0.615334673408, adv acc: 0.676021428571
+8: task loss: 0.61489726778, adv acc: 0.6764125
+1: task loss: 0.653790210438, adv acc: 0.64085
+2: task loss: 0.658442700315, adv acc: 0.640275
+3: task loss: 0.656702080425, adv acc: 0.643133333333
+4: task loss: 0.656341986156, adv acc: 0.6441375
+5: task loss: 0.657279091377, adv acc: 0.64338
+6: task loss: 0.657189066617, adv acc: 0.64315
+7: task loss: 0.657590975462, adv acc: 0.643007142857
+8: task loss: 0.657698019403, adv acc: 0.642725
+train, 6, adv acc: 0.642620481928
+dev, 6, adv acc: 0.6323
+1: task loss: 0.60800767293, adv acc: 0.684
+2: task loss: 0.611013446522, adv acc: 0.679325
+3: task loss: 0.611903588025, adv acc: 0.68045
+4: task loss: 0.612138108897, adv acc: 0.6790875
+5: task loss: 0.61306726099, adv acc: 0.67774
+6: task loss: 0.613887254, adv acc: 0.677283333333
+7: task loss: 0.613638275535, adv acc: 0.677521428571
+8: task loss: 0.613025078881, adv acc: 0.67791875
+1: task loss: 0.637053653967, adv acc: 0.6533
+2: task loss: 0.641226947576, adv acc: 0.653725
+3: task loss: 0.63944716233, adv acc: 0.656033333333
+4: task loss: 0.639090932074, adv acc: 0.6572125
+5: task loss: 0.640210573781, adv acc: 0.65632
+6: task loss: 0.640045464867, adv acc: 0.656216666667
+7: task loss: 0.640332611937, adv acc: 0.656092857143
+8: task loss: 0.640447993566, adv acc: 0.65573125
+train, 7, adv acc: 0.655596385542
+dev, 7, adv acc: 0.6439
+1: task loss: 0.60399538734, adv acc: 0.685
+2: task loss: 0.608520721185, adv acc: 0.681275
+3: task loss: 0.609507163819, adv acc: 0.682183333333
+4: task loss: 0.608750918549, adv acc: 0.6822625
+5: task loss: 0.609531511998, adv acc: 0.68116
+6: task loss: 0.610473514402, adv acc: 0.6801
+7: task loss: 0.610083871743, adv acc: 0.680385714286
+8: task loss: 0.609601793185, adv acc: 0.6808125
+1: task loss: 0.642413036525, adv acc: 0.64895
+2: task loss: 0.646702441567, adv acc: 0.6498
+3: task loss: 0.644838926629, adv acc: 0.652016666667
+4: task loss: 0.644398357245, adv acc: 0.6536625
+5: task loss: 0.645390808122, adv acc: 0.65316
+6: task loss: 0.645221409978, adv acc: 0.652916666667
+7: task loss: 0.645589724049, adv acc: 0.652542857143
+8: task loss: 0.645615296142, adv acc: 0.65205
+train, 8, adv acc: 0.651969879518
+dev, 8, adv acc: 0.6396
+1: task loss: 0.601315297675, adv acc: 0.68665
+2: task loss: 0.605577038991, adv acc: 0.684525
+3: task loss: 0.606151599081, adv acc: 0.6857
+4: task loss: 0.606122759932, adv acc: 0.6845875
+5: task loss: 0.607014542184, adv acc: 0.6827
+6: task loss: 0.607783616134, adv acc: 0.681791666667
+7: task loss: 0.607578106611, adv acc: 0.682271428571
+8: task loss: 0.607282761458, adv acc: 0.68226875
+1: task loss: 0.642191841078, adv acc: 0.6553
+2: task loss: 0.647003411436, adv acc: 0.656025
+3: task loss: 0.64516184295, adv acc: 0.658066666667
+4: task loss: 0.644951540542, adv acc: 0.65915
+5: task loss: 0.646147038097, adv acc: 0.65819
+6: task loss: 0.646001335454, adv acc: 0.657766666667
+7: task loss: 0.646388183444, adv acc: 0.657714285714
+8: task loss: 0.646397073984, adv acc: 0.657725
+train, 9, adv acc: 0.657662650602
+dev, 9, adv acc: 0.6492
+1: task loss: 0.602195771772, adv acc: 0.68765
+2: task loss: 0.605271494642, adv acc: 0.68545
+3: task loss: 0.60504428766, adv acc: 0.685933333333
+4: task loss: 0.604770268805, adv acc: 0.6854
+5: task loss: 0.605794636055, adv acc: 0.68382
+6: task loss: 0.606821801302, adv acc: 0.683183333333
+7: task loss: 0.606425172572, adv acc: 0.683514285714
+8: task loss: 0.605869672201, adv acc: 0.68380625
+1: task loss: 0.638051918447, adv acc: 0.65565
+2: task loss: 0.642443241757, adv acc: 0.655875
+3: task loss: 0.640499441445, adv acc: 0.658383333333
+4: task loss: 0.640189966449, adv acc: 0.6595
+5: task loss: 0.641275099895, adv acc: 0.65903
+6: task loss: 0.64110458927, adv acc: 0.658725
+7: task loss: 0.641448729091, adv acc: 0.658664285714
+8: task loss: 0.641444988088, adv acc: 0.65840625
+train, 10, adv acc: 0.658307228916
+dev, 10, adv acc: 0.6497
+1: task loss: 0.598982552612, adv acc: 0.6902
+2: task loss: 0.602760358351, adv acc: 0.68715
+3: task loss: 0.602966022917, adv acc: 0.688383333333
+4: task loss: 0.602488992283, adv acc: 0.686875
+5: task loss: 0.603413596475, adv acc: 0.68565
+6: task loss: 0.604498593026, adv acc: 0.6848
+7: task loss: 0.604194933672, adv acc: 0.685314285714
+8: task loss: 0.603820981388, adv acc: 0.685425
+1: task loss: 0.649422572869, adv acc: 0.6563
+2: task loss: 0.65454446865, adv acc: 0.655375
+3: task loss: 0.652521378603, adv acc: 0.6578
+4: task loss: 0.65227946053, adv acc: 0.6586625
+5: task loss: 0.653452734369, adv acc: 0.65798
+6: task loss: 0.6532548816, adv acc: 0.657691666667
+7: task loss: 0.653625930339, adv acc: 0.65755
+8: task loss: 0.653587352975, adv acc: 0.65746875
+train, 11, adv acc: 0.657253012048
+dev, 11, adv acc: 0.6495
+1: task loss: 0.598328087538, adv acc: 0.6939
+2: task loss: 0.601547501549, adv acc: 0.6901
+3: task loss: 0.601720527321, adv acc: 0.689633333333
+4: task loss: 0.601469827132, adv acc: 0.6881
+5: task loss: 0.602306011833, adv acc: 0.68696
+6: task loss: 0.603100824446, adv acc: 0.686116666667
+7: task loss: 0.602636758241, adv acc: 0.686507142857
+8: task loss: 0.602120113238, adv acc: 0.6869375
+1: task loss: 0.64342134136, adv acc: 0.65695
+2: task loss: 0.648295961565, adv acc: 0.6552
+3: task loss: 0.646304518076, adv acc: 0.657983333333
+4: task loss: 0.646145904145, adv acc: 0.65905
+5: task loss: 0.647208881328, adv acc: 0.65839
+6: task loss: 0.647111488197, adv acc: 0.65785
+7: task loss: 0.647499875769, adv acc: 0.657807142857
+8: task loss: 0.647495375513, adv acc: 0.6575125
+train, 12, adv acc: 0.657343373494
+dev, 12, adv acc: 0.65
+1: task loss: 0.596406816489, adv acc: 0.69135
+2: task loss: 0.599822792867, adv acc: 0.6902
+3: task loss: 0.599876159018, adv acc: 0.69085
+4: task loss: 0.599596616091, adv acc: 0.6896125
+5: task loss: 0.600748515655, adv acc: 0.68782
+6: task loss: 0.601385557271, adv acc: 0.68725
+7: task loss: 0.600995378754, adv acc: 0.687671428571
+8: task loss: 0.600342054147, adv acc: 0.687975
+1: task loss: 0.634451355749, adv acc: 0.66065
+2: task loss: 0.639031294492, adv acc: 0.6591
+3: task loss: 0.63726600396, adv acc: 0.661333333333
+4: task loss: 0.637018127789, adv acc: 0.66245
+5: task loss: 0.63809887807, adv acc: 0.66184
+6: task loss: 0.637900539336, adv acc: 0.661325
+7: task loss: 0.63825292727, adv acc: 0.661321428571
+8: task loss: 0.638171504463, adv acc: 0.6614
+train, 13, adv acc: 0.661277108434
+dev, 13, adv acc: 0.6536
+1: task loss: 0.595205044723, adv acc: 0.69315
+2: task loss: 0.598398991406, adv acc: 0.690975
+3: task loss: 0.59872493209, adv acc: 0.691533333333
+4: task loss: 0.598125188917, adv acc: 0.690975
+5: task loss: 0.59916229527, adv acc: 0.68949
+6: task loss: 0.600160726662, adv acc: 0.688383333333
+7: task loss: 0.599645817876, adv acc: 0.689107142857
+8: task loss: 0.5990111671, adv acc: 0.68965625
+1: task loss: 0.633741144776, adv acc: 0.66825
+2: task loss: 0.638573704827, adv acc: 0.66655
+3: task loss: 0.636550690722, adv acc: 0.668816666667
+4: task loss: 0.636443460661, adv acc: 0.669375
+5: task loss: 0.637594077592, adv acc: 0.66868
+6: task loss: 0.637448664367, adv acc: 0.668341666667
+7: task loss: 0.637814758427, adv acc: 0.668171428571
+8: task loss: 0.637712352064, adv acc: 0.66814375
+train, 14, adv acc: 0.668036144578
+dev, 14, adv acc: 0.6604
+1: task loss: 0.593772876763, adv acc: 0.69405
+2: task loss: 0.596778664744, adv acc: 0.690625
+3: task loss: 0.597152172097, adv acc: 0.691416666667
+4: task loss: 0.596824423105, adv acc: 0.6909625
+5: task loss: 0.598070556436, adv acc: 0.68988
+6: task loss: 0.598963514499, adv acc: 0.689333333333
+7: task loss: 0.598660041131, adv acc: 0.69005
+8: task loss: 0.598017324081, adv acc: 0.69059375
+1: task loss: 0.649409914935, adv acc: 0.6587
+2: task loss: 0.654754305845, adv acc: 0.656575
+3: task loss: 0.652607407431, adv acc: 0.6591
+4: task loss: 0.65234962621, adv acc: 0.660025
+5: task loss: 0.653382030041, adv acc: 0.65943
+6: task loss: 0.653212754085, adv acc: 0.658933333333
+7: task loss: 0.653706564857, adv acc: 0.658807142857
+8: task loss: 0.65355450647, adv acc: 0.65870625
+train, 15, adv acc: 0.65856626506
+dev, 15, adv acc: 0.6526
+1: task loss: 0.591671343869, adv acc: 0.69605
+2: task loss: 0.595256154236, adv acc: 0.693425
+3: task loss: 0.595810699691, adv acc: 0.693883333333
+4: task loss: 0.596064876668, adv acc: 0.69315
+5: task loss: 0.597186867946, adv acc: 0.69172
+6: task loss: 0.597800754749, adv acc: 0.690841666667
+7: task loss: 0.597214491738, adv acc: 0.691421428571
+8: task loss: 0.596469691136, adv acc: 0.69165
+1: task loss: 0.635532750058, adv acc: 0.66395
+2: task loss: 0.640457888234, adv acc: 0.662225
+3: task loss: 0.638418852369, adv acc: 0.664616666667
+4: task loss: 0.63823618477, adv acc: 0.665825
+5: task loss: 0.639313490138, adv acc: 0.66539
+6: task loss: 0.639169074619, adv acc: 0.664975
+7: task loss: 0.639565986248, adv acc: 0.664864285714
+8: task loss: 0.639418686005, adv acc: 0.66483125
+train, 16, adv acc: 0.664596385542
+dev, 16, adv acc: 0.6593
+1: task loss: 0.5901775033, adv acc: 0.69655
+2: task loss: 0.59444772203, adv acc: 0.69355
+3: task loss: 0.594616047812, adv acc: 0.6941
+4: task loss: 0.594680244923, adv acc: 0.6933875
+5: task loss: 0.595687161798, adv acc: 0.69243
+6: task loss: 0.596441486009, adv acc: 0.691958333333
+7: task loss: 0.596358312246, adv acc: 0.692414285714
+8: task loss: 0.595637504411, adv acc: 0.69250625
+1: task loss: 0.631675761855, adv acc: 0.6704
+2: task loss: 0.636737119919, adv acc: 0.66955
+3: task loss: 0.634641763373, adv acc: 0.671633333333
+4: task loss: 0.634560873404, adv acc: 0.672425
+5: task loss: 0.635708307517, adv acc: 0.67176
+6: task loss: 0.63552983943, adv acc: 0.671408333333
+7: task loss: 0.635916289079, adv acc: 0.671442857143
+8: task loss: 0.635759083487, adv acc: 0.67131875
+train, 17, adv acc: 0.671204819277
+dev, 17, adv acc: 0.6649
+1: task loss: 0.588897208118, adv acc: 0.6992
+2: task loss: 0.593350190091, adv acc: 0.6965
+3: task loss: 0.593833888404, adv acc: 0.696983333333
+4: task loss: 0.593556433344, adv acc: 0.6959
+5: task loss: 0.594445265331, adv acc: 0.69474
+6: task loss: 0.595470284335, adv acc: 0.69365
+7: task loss: 0.59523539913, adv acc: 0.694035714286
+8: task loss: 0.594374180424, adv acc: 0.69446875
+1: task loss: 0.630271066415, adv acc: 0.66515
+2: task loss: 0.634842428654, adv acc: 0.66455
+3: task loss: 0.632894926322, adv acc: 0.6672
+4: task loss: 0.632688944075, adv acc: 0.668425
+5: task loss: 0.633845574243, adv acc: 0.66809
+6: task loss: 0.633612092207, adv acc: 0.668083333333
+7: task loss: 0.633950612645, adv acc: 0.668128571429
+8: task loss: 0.633830449061, adv acc: 0.66784375
+train, 18, adv acc: 0.667722891566
+dev, 18, adv acc: 0.6601
+1: task loss: 0.588574912858, adv acc: 0.6978
+2: task loss: 0.592116042078, adv acc: 0.6956
+3: task loss: 0.592725878151, adv acc: 0.697
+4: task loss: 0.592565788895, adv acc: 0.695825
+5: task loss: 0.593590960746, adv acc: 0.69421
+6: task loss: 0.594433776065, adv acc: 0.693641666667
+7: task loss: 0.594134140291, adv acc: 0.694285714286
+8: task loss: 0.593696861848, adv acc: 0.69475
+1: task loss: 0.636771648455, adv acc: 0.6702
+2: task loss: 0.641913719869, adv acc: 0.66865
+3: task loss: 0.639849365362, adv acc: 0.671433333333
+4: task loss: 0.639670495594, adv acc: 0.672025
+5: task loss: 0.640904476404, adv acc: 0.67145
+6: task loss: 0.640658267069, adv acc: 0.671083333333
+7: task loss: 0.641007254028, adv acc: 0.670971428571
+8: task loss: 0.640748668665, adv acc: 0.67091875
+train, 19, adv acc: 0.670765060241
+dev, 19, adv acc: 0.663
+1: task loss: 0.587327884185, adv acc: 0.7026
+2: task loss: 0.590981115931, adv acc: 0.699525
+3: task loss: 0.591317718454, adv acc: 0.699666666667
+4: task loss: 0.591384693131, adv acc: 0.6980875
+5: task loss: 0.592310072219, adv acc: 0.6962
+6: task loss: 0.593157693281, adv acc: 0.695258333333
+7: task loss: 0.592843844398, adv acc: 0.695607142857
+8: task loss: 0.592186762612, adv acc: 0.6960375
+1: task loss: 0.634724587834, adv acc: 0.6643
+2: task loss: 0.639579170471, adv acc: 0.664125
+3: task loss: 0.637589887162, adv acc: 0.66585
+4: task loss: 0.637385007361, adv acc: 0.6670125
+5: task loss: 0.638481492884, adv acc: 0.66637
+6: task loss: 0.638327493217, adv acc: 0.666225
+7: task loss: 0.638672643479, adv acc: 0.666214285714
+8: task loss: 0.638500782163, adv acc: 0.66618125
+train, 20, adv acc: 0.665987951807
+dev, 20, adv acc: 0.6615
+1: task loss: 0.586163138342, adv acc: 0.69965
+2: task loss: 0.590328605032, adv acc: 0.697275
+3: task loss: 0.591052179003, adv acc: 0.69855
+4: task loss: 0.590730543435, adv acc: 0.69725
+5: task loss: 0.591467739525, adv acc: 0.69615
+6: task loss: 0.592175824706, adv acc: 0.695383333333
+7: task loss: 0.591543150568, adv acc: 0.696007142857
+8: task loss: 0.590979336643, adv acc: 0.69626875
+1: task loss: 0.638813822114, adv acc: 0.6667
+2: task loss: 0.643982043833, adv acc: 0.666525
+3: task loss: 0.641799751103, adv acc: 0.668716666667
+4: task loss: 0.641648993549, adv acc: 0.67015
+5: task loss: 0.64282666805, adv acc: 0.66955
+6: task loss: 0.642665348425, adv acc: 0.66945
+7: task loss: 0.643005667896, adv acc: 0.669314285714
+8: task loss: 0.642828794043, adv acc: 0.669175
+train, 21, adv acc: 0.668975903614
+dev, 21, adv acc: 0.6643
+1: task loss: 0.587769024831, adv acc: 0.70155
+2: task loss: 0.590245152703, adv acc: 0.699675
+3: task loss: 0.590490534618, adv acc: 0.70015
+4: task loss: 0.589915752001, adv acc: 0.6997625
+5: task loss: 0.590776079012, adv acc: 0.69827
+6: task loss: 0.591486870794, adv acc: 0.697366666667
+7: task loss: 0.591255131079, adv acc: 0.697821428571
+8: task loss: 0.59076505814, adv acc: 0.69811875
+1: task loss: 0.639120815611, adv acc: 0.66825
+2: task loss: 0.644696384263, adv acc: 0.66765
+3: task loss: 0.642681361675, adv acc: 0.669966666667
+4: task loss: 0.642475485361, adv acc: 0.6706625
+5: task loss: 0.643692535667, adv acc: 0.66994
+6: task loss: 0.643421449693, adv acc: 0.669408333333
+7: task loss: 0.643834355293, adv acc: 0.669471428571
+8: task loss: 0.643607996225, adv acc: 0.6695125
+train, 22, adv acc: 0.669343373494
+dev, 22, adv acc: 0.6635
+1: task loss: 0.586652130866, adv acc: 0.702
+2: task loss: 0.589404561889, adv acc: 0.700225
+3: task loss: 0.589986074519, adv acc: 0.701133333333
+4: task loss: 0.58993482011, adv acc: 0.699425
+5: task loss: 0.590835814662, adv acc: 0.69799
+6: task loss: 0.591509006814, adv acc: 0.697491666667
+7: task loss: 0.590565307382, adv acc: 0.698042857143
+8: task loss: 0.589781065372, adv acc: 0.69821875
+1: task loss: 0.619555418169, adv acc: 0.6774
+2: task loss: 0.623875797874, adv acc: 0.675225
+3: task loss: 0.621922433428, adv acc: 0.677483333333
+4: task loss: 0.621993942013, adv acc: 0.6783
+5: task loss: 0.623129279482, adv acc: 0.67712
+6: task loss: 0.622969399208, adv acc: 0.676866666667
+7: task loss: 0.623231436827, adv acc: 0.676714285714
+8: task loss: 0.623005116202, adv acc: 0.6766
+train, 23, adv acc: 0.676487951807
+dev, 23, adv acc: 0.6704
+1: task loss: 0.584972254145, adv acc: 0.70165
+2: task loss: 0.587394560653, adv acc: 0.699075
+3: task loss: 0.588101931322, adv acc: 0.699766666667
+4: task loss: 0.588213156906, adv acc: 0.6991875
+5: task loss: 0.589232255337, adv acc: 0.69819
+6: task loss: 0.589762497085, adv acc: 0.697625
+7: task loss: 0.589384750157, adv acc: 0.698121428571
+8: task loss: 0.588777959616, adv acc: 0.69846875
+1: task loss: 0.626562611294, adv acc: 0.6751
+2: task loss: 0.63118807466, adv acc: 0.673125
+3: task loss: 0.629183072758, adv acc: 0.6757
+4: task loss: 0.629258257306, adv acc: 0.67635
+5: task loss: 0.630394806328, adv acc: 0.67552
+6: task loss: 0.630174003768, adv acc: 0.675358333333
+7: task loss: 0.630537531069, adv acc: 0.675228571429
+8: task loss: 0.630278139269, adv acc: 0.67523125
+train, 24, adv acc: 0.67513253012
+dev, 24, adv acc: 0.6674
+1: task loss: 0.585759518856, adv acc: 0.70205
+2: task loss: 0.58809351308, adv acc: 0.699775
+3: task loss: 0.587978238597, adv acc: 0.701266666667
+4: task loss: 0.587851143967, adv acc: 0.7001375
+5: task loss: 0.589031771592, adv acc: 0.69868
+6: task loss: 0.589581997163, adv acc: 0.697666666667
+7: task loss: 0.589259125729, adv acc: 0.698442857143
+8: task loss: 0.588450087195, adv acc: 0.698825
+1: task loss: 0.628503452492, adv acc: 0.67185
+2: task loss: 0.633428641391, adv acc: 0.67145
+3: task loss: 0.631367013661, adv acc: 0.674216666667
+4: task loss: 0.631278179562, adv acc: 0.67525
+5: task loss: 0.632452017612, adv acc: 0.67443
+6: task loss: 0.632168836617, adv acc: 0.674183333333
+7: task loss: 0.632542624732, adv acc: 0.67405
+8: task loss: 0.632313814437, adv acc: 0.67405625
+train, 25, adv acc: 0.673885542169
+dev, 25, adv acc: 0.6657
+1: task loss: 0.583230279094, adv acc: 0.7023
+2: task loss: 0.587273517933, adv acc: 0.7002
+3: task loss: 0.587441882525, adv acc: 0.7013
+4: task loss: 0.58683120584, adv acc: 0.700775
+5: task loss: 0.587833738352, adv acc: 0.69929
+6: task loss: 0.588651443629, adv acc: 0.69865
+7: task loss: 0.588177363277, adv acc: 0.699214285714
+8: task loss: 0.587484679208, adv acc: 0.69961875
+1: task loss: 0.633540443093, adv acc: 0.66915
+2: task loss: 0.638691815904, adv acc: 0.668325
+3: task loss: 0.636629781646, adv acc: 0.670716666667
+4: task loss: 0.636521425404, adv acc: 0.671825
+5: task loss: 0.637694144012, adv acc: 0.67134
+6: task loss: 0.637476463732, adv acc: 0.670816666667
+7: task loss: 0.637802703061, adv acc: 0.671014285714
+8: task loss: 0.637505183656, adv acc: 0.6710875
+train, 26, adv acc: 0.670831325301
+dev, 26, adv acc: 0.6643
+1: task loss: 0.581908716035, adv acc: 0.70425
+2: task loss: 0.585243768251, adv acc: 0.702925
+3: task loss: 0.58568406438, adv acc: 0.704266666667
+4: task loss: 0.585750965983, adv acc: 0.7030375
+5: task loss: 0.586502635837, adv acc: 0.70146
+6: task loss: 0.58737337213, adv acc: 0.700275
+7: task loss: 0.587207289161, adv acc: 0.700692857143
+8: task loss: 0.586412223926, adv acc: 0.7009625
+1: task loss: 0.627639876783, adv acc: 0.67185
+2: task loss: 0.632456258148, adv acc: 0.67085
+3: task loss: 0.630553750368, adv acc: 0.673583333333
+4: task loss: 0.63049690021, adv acc: 0.6745375
+5: task loss: 0.631550599649, adv acc: 0.67372
+6: task loss: 0.631422327429, adv acc: 0.673208333333
+7: task loss: 0.631779244087, adv acc: 0.673128571429
+8: task loss: 0.631517792849, adv acc: 0.67324375
+train, 27, adv acc: 0.673054216867
+dev, 27, adv acc: 0.6673
+1: task loss: 0.582002385712, adv acc: 0.7058
+2: task loss: 0.584992786646, adv acc: 0.703475
+3: task loss: 0.58554196585, adv acc: 0.703666666667
+4: task loss: 0.585610731971, adv acc: 0.7021875
+5: task loss: 0.586511229429, adv acc: 0.70086
+6: task loss: 0.587215059121, adv acc: 0.700458333333
+7: task loss: 0.587084709992, adv acc: 0.700614285714
+8: task loss: 0.586164057755, adv acc: 0.700825
+1: task loss: 0.61824195056, adv acc: 0.6867
+2: task loss: 0.62325994997, adv acc: 0.6843
+3: task loss: 0.621111821222, adv acc: 0.686916666667
+4: task loss: 0.62121254164, adv acc: 0.6871875
+5: task loss: 0.622397322159, adv acc: 0.68592
+6: task loss: 0.62213238008, adv acc: 0.685716666667
+7: task loss: 0.622477086558, adv acc: 0.685357142857
+8: task loss: 0.622060906845, adv acc: 0.6854625
+train, 28, adv acc: 0.685277108434
+dev, 28, adv acc: 0.6794
+1: task loss: 0.581664677644, adv acc: 0.7069
+2: task loss: 0.585300845277, adv acc: 0.702975
+3: task loss: 0.585230808345, adv acc: 0.703633333333
+4: task loss: 0.584667196912, adv acc: 0.7030625
+5: task loss: 0.585503152528, adv acc: 0.70164
+6: task loss: 0.586431250679, adv acc: 0.700766666667
+7: task loss: 0.586208963479, adv acc: 0.701492857143
+8: task loss: 0.585450993684, adv acc: 0.7017125
+1: task loss: 0.621614104617, adv acc: 0.6799
+2: task loss: 0.626682430059, adv acc: 0.67785
+3: task loss: 0.624662632644, adv acc: 0.680416666667
+4: task loss: 0.624647211865, adv acc: 0.6811375
+5: task loss: 0.625806438782, adv acc: 0.68005
+6: task loss: 0.62563630268, adv acc: 0.679866666667
+7: task loss: 0.625989093673, adv acc: 0.679707142857
+8: task loss: 0.625657974894, adv acc: 0.67988125
+train, 29, adv acc: 0.679789156627
+dev, 29, adv acc: 0.674
+1: task loss: 0.580607736903, adv acc: 0.70595
+2: task loss: 0.58389284462, adv acc: 0.702875
+3: task loss: 0.584284964333, adv acc: 0.704033333333
+4: task loss: 0.584245292564, adv acc: 0.702325
+5: task loss: 0.585421507384, adv acc: 0.70095
+6: task loss: 0.585991771536, adv acc: 0.700541666667
+7: task loss: 0.586200584634, adv acc: 0.701021428571
+8: task loss: 0.585537731061, adv acc: 0.7015375
+1: task loss: 0.631339821386, adv acc: 0.6788
+2: task loss: 0.636625363159, adv acc: 0.6768
+3: task loss: 0.634338692125, adv acc: 0.679216666667
+4: task loss: 0.634389589834, adv acc: 0.6799625
+5: task loss: 0.635588215981, adv acc: 0.67899
+6: task loss: 0.635330946795, adv acc: 0.678816666667
+7: task loss: 0.635763092559, adv acc: 0.678771428571
+8: task loss: 0.635456873286, adv acc: 0.67880625
+train, 30, adv acc: 0.678710843373
+dev, 30, adv acc: 0.6719
+best_score:0.6794
+best_epoch:28
+train_task_acc:[0.6226204819277108, 0.6376385542168674, 0.641277108433735, 0.6427289156626506, 0.6402469879518072, 0.6426204819277108, 0.6555963855421687, 0.6519698795180723, 0.6576626506024097, 0.6583072289156626, 0.6572530120481928, 0.6573433734939759, 0.661277108433735, 0.6680361445783133, 0.658566265060241, 0.6645963855421687, 0.6712048192771084, 0.6677228915662651, 0.6707650602409638, 0.6659879518072289, 0.6689759036144578, 0.6693433734939759, 0.6764879518072289, 0.6751325301204819, 0.6738855421686747, 0.6708313253012048, 0.6730542168674699, 0.6852771084337349, 0.6797891566265061, 0.678710843373494]
+train_loss:[0.6805629701032696, 0.6653892744398979, 0.661223284482956, 0.6637223298233675, 0.6635489256252726, 0.6579355822988303, 0.6406742516440082, 0.6458358048286783, 0.6466615931499435, 0.6416992936349777, 0.6538887998361186, 0.647774806296969, 0.6384622457637844, 0.6380140164070819, 0.6538608657897237, 0.6397151245697436, 0.6360893565904663, 0.6341220505481743, 0.6410891764479948, 0.6387911082994507, 0.643157869550119, 0.6439364452764212, 0.623332422269396, 0.6306082224673536, 0.6326548229527761, 0.6378311499407493, 0.6318448765809277, 0.6224265748851271, 0.6260056661252515, 0.6357970156727067]
+dev_task_acc:[0.6108, 0.6271, 0.6293, 0.6308, 0.6299, 0.6323, 0.6439, 0.6396, 0.6492, 0.6497, 0.6495, 0.65, 0.6536, 0.6604, 0.6526, 0.6593, 0.6649, 0.6601, 0.663, 0.6615, 0.6643, 0.6635, 0.6704, 0.6674, 0.6657, 0.6643, 0.6673, 0.6794, 0.674, 0.6719]
+dev_loss:[0.695610229408741, 0.6793521546721458, 0.6751676131010056, 0.6795703992128372, 0.6775750330209732, 0.6714710577726364, 0.6553051216721535, 0.6606882079482078, 0.6607568942070007, 0.6569019767999649, 0.6704252864837646, 0.6636464155435562, 0.6521001956701279, 0.6537610550999642, 0.6702753675937653, 0.6551898458003997, 0.6528075199365616, 0.6510189932823182, 0.6578214971542359, 0.655701993393898, 0.6624395914912223, 0.6605154503703118, 0.6390485005259514, 0.6461208955049514, 0.6494001811027527, 0.6555645956993102, 0.6470077684998512, 0.6393782276391983, 0.6419153723239899, 0.6543567834019661]
+attacking: sent_race-n_adv:1-ro:1.0/best_model
+The dy.parameter(...) call is now DEPRECATED.
+        There is no longer need to explicitly add parameters to the computation graph.
+        Any used parameter will be added automatically.
+== 2026-11-09 03:08:35 UTC  finished (exit 0)

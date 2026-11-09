@@ -1,0 +1,47 @@
+== 2026-11-04 01:27:52 UTC  python trainer.py --dynet-seed 12345 --dynet-autobatch 1 --dynet-mem 2048 --ro -1 --task sentiment --type 1 --epochs 8
+[dynet] random seed: 12345
+[dynet] using autobatching
+[dynet] allocating memory: 2048MB
+[dynet] memory allocation done.
+{'--adv_depth': '1',
+ '--adv_size': '300',
+ '--dropout': '0.2',
+ '--dynet-autobatch': '1',
+ '--dynet-devices': None,
+ '--dynet-gpus': None,
+ '--dynet-mem': '2048',
+ '--dynet-seed': '12345',
+ '--enc_size': '300',
+ '--epochs': '8',
+ '--init': '0',
+ '--lstm_size': '1',
+ '--num_adv': '1',
+ '--rnn_dropout': '0.0',
+ '--rnn_type': 'lstm',
+ '--ro': '-1',
+ '--task': 'sentiment',
+ '--type': '1',
+ '--vec_drop': '0'}
+sentiment-type:1-ro:-1
+1 task
+training started
+1: task loss: [0.66493344], adv acc: 0.59515
+2: task loss: [0.64365269], adv acc: 0.6308
+3: task loss: [0.62760169], adv acc: 0.648366666667
+4: task loss: [0.61695141], adv acc: 0.6582
+5: task loss: [0.60874213], adv acc: 0.66624
+6: task loss: [0.60238576], adv acc: 0.672175
+7: task loss: [0.59811029], adv acc: 0.675964285714
+8: task loss: [0.59361848], adv acc: 0.680375
+dev-task epoch: 1, acc: 0.7132, loss: 0.571921161287
+1: task loss: [0.54146475], adv acc: 0.7204
+2: task loss: [0.54636821], adv acc: 0.71925
+3: task loss: [0.54357259], adv acc: 0.72045
+4: task loss: [0.54066042], adv acc: 0.722225
+5: task loss: [0.53776915], adv acc: 0.72424
+6: task loss: [0.53689043], adv acc: 0.725466666667
+7: task loss: [0.53622489], adv acc: 0.726335714286
+8: task loss: [0.5351476], adv acc: 0.7276875
+dev-task epoch: 2, acc: 0.7308, loss: 0.546383913839
+1: task loss: [0.50790166], adv acc: 0.7466
+2: task loss: [0.51170456], adv acc: 0.74255

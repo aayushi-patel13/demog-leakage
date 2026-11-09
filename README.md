@@ -21,6 +21,9 @@ demographic attribute well above chance.
 | `src/label_reddit.py` | distant-supervision sentiment (emoji, optionally VADER), length-matched balanced quadrants, author-disjoint split |
 | `src/annotation.py` | blind human-annotation sample (200 comments) and agreement scoring |
 | `src/prepare_pan17.py` | existing dataset: PAN 2017 English, variety (GB vs US) or gender as the protected attribute |
+| `scripts/run_original.sh` | runs the authors' original Python 2.7 / DyNet code, unchanged, on the faithful data (see below) |
+| `scripts/port_epoch_match.sh` | trains the PyTorch port for as many epochs as the original-code run completed, for a like-for-like comparison |
+| `scripts/resume_original.sh` | finishes the original-code comparison after an interruption: a 30-epoch attacker on the adversarial model beside the remaining port runs |
 | `scripts/finish_reddit.sh` | after collection: common end date, cleaning, labels, annotation sheet, summary, zip for Colab |
 | `src/report_reddit.py` | summary of the Reddit dataset and the annotation scores (`results/reddit_data.md`) |
 | `src/summarise_results.py` | every result in one table with 95% confidence intervals (`results/summary.md`) |
@@ -90,6 +93,46 @@ original code behaves as written, for an ablation against the clean data:
 python src/prepare_twitteraae.py data/raw/TwitterAAE-full-v1.zip data/processed/sent_race_faithful --mode faithful
 ```
 
+### The authors' original code
+
+```bash
+bash scripts/run_original.sh                          # about 7 hours on 2 CPU cores
+SKIP_DATA=1 SKIP_TRAIN=1 bash scripts/run_original.sh # attackers only, on whatever checkpoints exist
+bash scripts/port_epoch_match.sh                      # the port, for the same number of epochs
+bash scripts/resume_original.sh                       # after an interruption: both of the above, shortened
+```
+
+This clones github.com/yanaiela/demog-text-removal, writes the faithful
+TwitterAAE data in its file format (word ids plus a vocabulary file, as its
+`make_data.py` writes; the original code takes a fixed 44,000 tweets per
+quadrant, which only the faithful data has), and runs its `trainer.py` and
+`attacker.py` unchanged under Python 2.7 with mainline DyNet 2.1.2, with the
+options in its `runs.md`: a sentiment-only encoder and an adversarial encoder
+(lambda = 1) trained side by side, then attackers on the baseline's best model
+and on the adversarial run's best model and epoch-10 checkpoint. The authors
+built against their own DyNet fork, so `scripts/original_launcher.py` applies
+two shims without editing their files: the fork's `flip_gradient(x, ro)`
+becomes mainline `scale_gradient(x, -ro)`, and the TensorBoard logger becomes a
+no-op. `scripts/summarise_original.py` sets the results beside the port's on
+the same data in `results/original_code/summary.md`. On CPU an epoch takes 20
+to 35 minutes, which is why the full experiments use the port on a GPU.
+
+The run reported here was cut short when the Codespace stopped on idle, after 2
+sentiment epochs and 1 adversarial epoch; the original code keeps its best model
+as it goes, so the attackers were trained on those checkpoints
+(`SKIP_TRAIN=1`). `scripts/port_epoch_match.sh` then trains the port for exactly
+the same number of epochs on the same data and attacks it the same way, and the
+summary adds that epoch-matched comparison. The port holds out a validation set,
+so it trains on 156,000 tweets against the original's 166,000; the 10,000 test
+tweets are identical.
+
+The attacker on the sentiment-only model ran its full 100 epochs. The one on
+the adversarial model was stopped twice by the idle timeout, so
+`scripts/resume_original.sh` runs it again for 30 epochs, alongside the port's
+remaining run, and the summary compares every attacker over its first 30
+epochs. Logs of the stopped attempts are kept in
+`results/original_code/interrupted/`.
+
 ## 2. Constructed dataset: US vs Nigerian English on Reddit
 
 ```bash
@@ -140,8 +183,9 @@ identical after normalisation removed, 20% of authors held out for test.
 
 ## Deviations from the original, and why
 
-* **Framework.** The released code is Python 2 with a custom DyNet fork, so it
-  is reimplemented in PyTorch with the same sizes and optimiser settings (momentum
+* **Framework.** The released code is Python 2 with a custom DyNet fork. It is
+  run unchanged on the faithful data as a check (see *The authors' original
+  code*), and reimplemented in PyTorch for the full experiments, with the same sizes and optimiser settings (momentum
   SGD, lr 0.01, summed losses over batches of 32, gradient clipping at 5,
   sparse embedding updates, dropout 0.2).
 * **Epochs.** 20 instead of 100, for the compute available; every epoch is
